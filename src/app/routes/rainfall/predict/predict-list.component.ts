@@ -7,7 +7,10 @@ import {
 } from '@angular/core';
 import { STChange, STColumn } from '@delon/abc/st';
 import { SHARED_IMPORTS, TitleLabelComponent } from '@shared';
+import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
 import { Predict, PredictGroup } from '@shared/types/rain-grid';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { finalize } from 'rxjs';
 
 import { RainfallService } from '../rainfall.service';
@@ -17,18 +20,19 @@ import { RainfallService } from '../rainfall.service';
   templateUrl: './predict-list.component.html',
   styleUrls: ['./predict-list.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SHARED_IMPORTS, TitleLabelComponent],
+  imports: [SHARED_IMPORTS, TitleLabelComponent, DatePickerComponent],
 })
 export class PredictListComponent implements OnInit {
   private readonly service = inject(RainfallService);
+  private readonly message = inject(NzMessageService);
+  private readonly modal = inject(NzModalService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   protected readonly q = {
     page: 1,
     size: 10,
     sncode: '',
-    startDate: '',
-    endDate: '',
+    dateRange: [] as number[],
   };
 
   protected data: PredictGroup[] = [];
@@ -41,6 +45,7 @@ export class PredictListComponent implements OnInit {
     { title: '预测降雨', render: 'rainRender', width: 360 },
     { title: '数据量', render: 'countRender', width: 110 },
     { title: '更新时间', render: 'updateTimeRender', width: 170 },
+    { title: '操作', render: 'actionsRender', width: 110 },
   ];
 
   ngOnInit(): void {
@@ -54,8 +59,8 @@ export class PredictListComponent implements OnInit {
         page: this.q.page,
         size: this.q.size,
         sncode: this.q.sncode.trim(),
-        startTime: this.toMillis(this.q.startDate),
-        endTime: this.toMillis(this.q.endDate, true),
+        startTime: this.toTimestamp(this.q.dateRange[0]),
+        endTime: this.toTimestamp(this.q.dateRange[1]),
       })
       .pipe(
         finalize(() => {
@@ -79,8 +84,7 @@ export class PredictListComponent implements OnInit {
   protected resetQuery(): void {
     this.q.page = 1;
     this.q.sncode = '';
-    this.q.startDate = '';
-    this.q.endDate = '';
+    this.q.dateRange = [];
     this.getData();
   }
 
@@ -97,6 +101,27 @@ export class PredictListComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  protected remove(item: PredictGroup): void {
+    this.modal.confirm({
+      nzTitle: '删除预测数据',
+      nzContent: `确定删除「${this.formatTime(item.baseTime)}」这一组预测数据吗？`,
+      nzOkDanger: true,
+      nzOkText: '删除',
+      nzCancelText: '取消',
+      nzOnOk: () =>
+        this.service.deletePredict({ baseTime: item.baseTime }).subscribe({
+          next: () => {
+            this.message.success('预测数据已删除');
+            if (this.data.length === 1 && this.q.page > 1) {
+              this.q.page -= 1;
+            }
+            this.getData();
+          },
+          error: (err) => this.message.error(err?.msg || err?.message || '删除预测数据失败'),
+        }),
+    });
   }
 
   protected formatTime(value?: number): string {
@@ -159,13 +184,9 @@ export class PredictListComponent implements OnInit {
     }
   }
 
-  private toMillis(value: string, endOfDay = false): number | undefined {
+  private toTimestamp(value?: number | Date): number | undefined {
     if (!value) return undefined;
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return undefined;
-    if (endOfDay) {
-      date.setHours(23, 59, 59, 999);
-    }
-    return date.getTime();
+    if (value instanceof Date) return Number.isNaN(value.getTime()) ? undefined : value.getTime();
+    return Number.isFinite(value) ? value : undefined;
   }
 }

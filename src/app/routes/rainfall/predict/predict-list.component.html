@@ -33,8 +33,7 @@
           />
         </nz-input-wrapper>
         <div class="filter-controls">
-          <input nz-input type="date" [(ngModel)]="q.startDate" />
-          <input nz-input type="date" [(ngModel)]="q.endDate" />
+          <app-date-picker class="time-range" [(date)]="q.dateRange" />
         </div>
         <div class="filter-actions">
           <button nz-button nzType="primary" (click)="search()">
@@ -94,6 +93,20 @@
 
       <ng-template st-row="updateTimeRender" let-item>
         {{ formatTime(latestUpdate(item)) }}
+      </ng-template>
+
+      <ng-template st-row="actionsRender" let-item>
+        <button
+          nz-button
+          nzType="link"
+          class="action-button"
+          aria-label="删除"
+          nzDanger
+          (click)="remove(item)"
+        >
+          <i nz-icon nzType="delete"></i>
+          <span>删除</span>
+        </button>
       </ng-template>
     </st>
   </nz-card>

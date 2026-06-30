@@ -33,10 +33,7 @@ export class DeviceListComponent implements OnInit {
     page: 1,
     size: 10,
     content: '',
-    type: '',
     status: '',
-    gsw: '',
-    rain: '',
   };
 
   protected data: Device[] = [];
@@ -45,9 +42,8 @@ export class DeviceListComponent implements OnInit {
 
   protected readonly columns: Array<STColumn<Device>> = [
     { title: '设备', index: 'sncode', render: 'deviceRender', width: 180 },
-    { title: '坐标', render: 'locationRender', width: 190 },
+    { title: '坐标', render: 'locationRender', width: 220 },
     { title: '类型', index: 'type', render: 'typeRender', width: 90 },
-    { title: '能力', render: 'capabilityRender', width: 130 },
     { title: '状态', index: 'status', render: 'statusRender', width: 80 },
     { title: '最后心跳', index: 'last_time', render: 'heartbeatRender', width: 150 },
     { title: '操作', render: 'actionsRender', width: 130 },
@@ -83,10 +79,7 @@ export class DeviceListComponent implements OnInit {
   protected resetQuery(): void {
     this.q.page = 1;
     this.q.content = '';
-    this.q.type = '';
     this.q.status = '';
-    this.q.gsw = '';
-    this.q.rain = '';
     this.getData();
   }
 
@@ -135,10 +128,6 @@ export class DeviceListComponent implements OnInit {
     return status === 1 ? '在线' : '离线';
   }
 
-  protected capabilityLabel(value?: boolean | null): string {
-    return value ? '已开启' : '未开启';
-  }
-
   protected formatTime(value?: number): string {
     if (!value) return '-';
     const date = new Date(value);
@@ -149,5 +138,19 @@ export class DeviceListComponent implements OnInit {
   protected coordinateText(value?: number | null, precision = 6): string {
     if (value === null || value === undefined) return '-';
     return Number(value).toFixed(precision);
+  }
+
+  protected altitudeText(item: Device): string {
+    const value = this.altitudeValue(item);
+    return this.coordinateText(value, 2);
+  }
+
+  private altitudeValue(item: Device): number | null | undefined {
+    const record = item as Device & {
+      altitude?: number | null;
+      elevation?: number | null;
+      height?: number | null;
+    };
+    return record.alt ?? record.altitude ?? record.elevation ?? record.height;
   }
 }

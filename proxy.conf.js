@@ -15,8 +15,8 @@ module.exports = {
     },
     changeOrigin: true,
   },
-  '/api/ws': {
-    target: 'https://rain-grid.navfirst.com',
+  '/api/ws/': {
+    target: 'https://rain-grid.navfirst.com/api/ws/',
     secure: false,
     ws: true,
     changeOrigin: true,

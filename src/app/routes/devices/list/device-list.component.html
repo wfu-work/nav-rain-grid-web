@@ -9,10 +9,12 @@
         <i nz-icon nzType="reload"></i>
         刷新
       </button>
-      <button nz-button nzType="primary" (click)="create()">
-        <i nz-icon nzType="plus"></i>
-        新建设备
-      </button>
+      @if (false) {
+        <button nz-button nzType="primary" (click)="create()">
+          <i nz-icon nzType="plus"></i>
+          新建设备
+        </button>
+      }
     </div>
   </div>
 
@@ -21,7 +23,7 @@
       <div class="filter-heading">
         <div>
           <strong>筛选设备</strong>
-          <span>按设备号、别名、类型、在线状态与采集能力定位设备。</span>
+          <span>按设备号、别名与在线状态定位设备。</span>
         </div>
         <span class="result-chip">共 {{ total || 0 }} 条</span>
       </div>
@@ -32,26 +34,15 @@
           <input
             nz-input
             [(ngModel)]="q.content"
-            placeholder="搜索设备号、别名或类型"
+            placeholder="搜索设备号或别名"
             (keydown.enter)="search()"
           />
         </nz-input-wrapper>
         <div class="filter-controls">
-          <input nz-input [(ngModel)]="q.type" placeholder="设备类型" (keydown.enter)="search()" />
           <nz-select [(ngModel)]="q.status" nzPlaceHolder="状态" (ngModelChange)="search()">
             <nz-option nzValue="" nzLabel="全部状态" />
             <nz-option nzValue="1" nzLabel="在线" />
             <nz-option nzValue="0" nzLabel="离线" />
-          </nz-select>
-          <nz-select [(ngModel)]="q.gsw" nzPlaceHolder="水位计" (ngModelChange)="search()">
-            <nz-option nzValue="" nzLabel="全部水位计" />
-            <nz-option nzValue="true" nzLabel="已开启" />
-            <nz-option nzValue="false" nzLabel="未开启" />
-          </nz-select>
-          <nz-select [(ngModel)]="q.rain" nzPlaceHolder="降雨预测" (ngModelChange)="search()">
-            <nz-option nzValue="" nzLabel="全部预测" />
-            <nz-option nzValue="true" nzLabel="已开启" />
-            <nz-option nzValue="false" nzLabel="未开启" />
           </nz-select>
         </div>
         <div class="filter-actions">
@@ -82,23 +73,12 @@
       <ng-template st-row="locationRender" let-item>
         <div class="mono">经度 {{ coordinateText(item.lng) }}</div>
         <div class="muted mono">
-          纬度 {{ coordinateText(item.lat) }} · 高程 {{ coordinateText(item.alt, 2) }}
+          纬度 {{ coordinateText(item.lat) }} · 高程 {{ altitudeText(item) }}
         </div>
       </ng-template>
 
-      <ng-template st-row="typeRender" let-item>
-        <span class="pill">{{ item.type || '未设置' }}</span>
-      </ng-template>
-
-      <ng-template st-row="capabilityRender" let-item>
-        <div class="capability-line">
-          <span class="capability" [class.capability-on]="item.gsw">水位</span>
-          <span>{{ capabilityLabel(item.gsw) }}</span>
-        </div>
-        <div class="capability-line">
-          <span class="capability" [class.capability-on]="item.rain">降雨</span>
-          <span>{{ capabilityLabel(item.rain) }}</span>
-        </div>
+      <ng-template st-row="typeRender">
+        <span class="pill">北斗降雨</span>
       </ng-template>
 
       <ng-template st-row="statusRender" let-item>

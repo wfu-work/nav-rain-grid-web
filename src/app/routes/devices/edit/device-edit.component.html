@@ -98,12 +98,14 @@
             <span>标记设备上报能力，决定设备是否进入对应业务数据处理流程。</span>
           </div>
           <se-container [col]="2" labelWidth="118" size="compact">
-            <se label="北斗水位计">
-              <div class="control-stack">
-                <nz-switch formControlName="gsw" />
-                <span>开启后表示该设备具备北斗水位计能力，便于后续水位业务扩展。</span>
-              </div>
-            </se>
+            @if (false) {
+              <se label="北斗水位计">
+                <div class="control-stack">
+                  <nz-switch formControlName="gsw" />
+                  <span>开启后表示该设备具备北斗水位计能力，便于后续水位业务扩展。</span>
+                </div>
+              </se>
+            }
             <se label="降雨预测">
               <div class="control-stack">
                 <nz-switch formControlName="rain" />

@@ -1,0 +1,42 @@
+@if (devices.length > 0) {
+  <div class="map-plane" [style.min-height.px]="minHeight">
+    <div class="axis axis-x">经度</div>
+    <div class="axis axis-y">纬度</div>
+    @if (distanceLinks.length > 0) {
+      <svg class="distance-layer" viewBox="0 0 100 100" preserveAspectRatio="none">
+        @for (link of distanceLinks; track link.key) {
+          <g>
+            <line [attr.x1]="link.x1" [attr.y1]="link.y1" [attr.x2]="link.x2" [attr.y2]="link.y2" />
+          </g>
+        }
+      </svg>
+      @for (link of distanceLinks; track link.key) {
+        <span class="distance-label" [style.left.%]="link.labelX" [style.top.%]="link.labelY">
+          {{ link.label }}
+        </span>
+      }
+    }
+    @for (item of devices; track item.guid) {
+      <button
+        type="button"
+        class="device-marker"
+        [class.offline]="item.status !== 1"
+        [class.selected]="item.sncode === selectedSncode"
+        [style.left.%]="markerLeft(item)"
+        [style.top.%]="markerTop(item)"
+        [attr.aria-label]="(item.alias || item.sncode) + ' · ' + coordinateText(item)"
+        (click)="deviceSelect.emit(item)"
+      >
+        <span></span>
+        <em>
+          <strong>{{ item.sncode }}</strong>
+          <small>
+            经度 {{ coordinateLines(item).lng }} · 纬度 {{ coordinateLines(item).lat }}
+          </small>
+        </em>
+      </button>
+    }
+  </div>
+} @else {
+  <div class="empty-state">暂无可定位设备，请先在设备编辑页维护经纬度。</div>
+}

@@ -22,6 +22,12 @@ export class DevicesService {
     });
   }
 
+  listAll(query: DeviceQuery = {}): Observable<Device[]> {
+    return this.http.get<Device[]>('/device/list/all', {
+      params: this.toParams(query),
+    });
+  }
+
   query(query: DeviceQuery = {}): Observable<Device[]> {
     return this.http.get<Device[]>('/device/query', {
       params: this.toParams(query),

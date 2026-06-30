@@ -39,14 +39,14 @@ export class DeviceEditComponent implements OnInit {
   protected device: Device | null = null;
 
   protected readonly form = this.fb.group({
-    sncode: ['', [Validators.required, Validators.maxLength(50)]],
+    sncode: [{ value: '', disabled: true }, [Validators.required, Validators.maxLength(50)]],
     alias: [''],
-    type: [''],
+    type: [{ value: '北斗降雨', disabled: true }],
     lng: [null as number | null],
     lat: [null as number | null],
     alt: [null as number | null],
     gsw: [false],
-    rain: [false],
+    rain: [{ value: true, disabled: true }],
     status: [1, [Validators.required]],
   });
 
@@ -136,12 +136,12 @@ export class DeviceEditComponent implements OnInit {
     this.form.reset({
       sncode: device.sncode ?? '',
       alias: device.alias ?? '',
-      type: device.type ?? '',
+      type: device.type || '北斗降雨',
       lng: device.lng ?? null,
       lat: device.lat ?? null,
       alt: device.alt ?? null,
       gsw: device.gsw ?? false,
-      rain: device.rain ?? false,
+      rain: true,
       status: device.status ?? 0,
     });
   }

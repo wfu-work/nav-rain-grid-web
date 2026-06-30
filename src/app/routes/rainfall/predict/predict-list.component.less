@@ -118,8 +118,9 @@
   align-items: center;
 }
 
-.filter-controls input {
-  width: 150px;
+.time-range {
+  display: block;
+  width: 360px;
 }
 
 .filter-actions {
@@ -194,6 +195,14 @@
   color: #567064;
 }
 
+.action-button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 0;
+  font-weight: 800;
+}
+
 @media (max-width: 900px) {
   .page-heading,
   .filter-heading {
@@ -205,7 +214,7 @@
     grid-template-columns: 1fr;
   }
 
-  .filter-controls input {
+  .time-range {
     width: 100%;
   }
 

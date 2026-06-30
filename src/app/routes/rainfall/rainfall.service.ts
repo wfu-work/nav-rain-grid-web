@@ -10,6 +10,12 @@ export interface PredictQuery extends PageQuery {
   endTime?: number | string;
 }
 
+export interface PredictDeleteParams {
+  baseTime?: number | string;
+  sncode?: string;
+  time?: number | string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RainfallService {
   private readonly http = inject(HttpClient);
@@ -20,7 +26,13 @@ export class RainfallService {
     });
   }
 
-  private toParams(query: PredictQuery): HttpParams {
+  deletePredict(params: PredictDeleteParams): Observable<boolean> {
+    return this.http.delete<boolean>('/predict/params', {
+      params: this.toParams(params),
+    });
+  }
+
+  private toParams(query: PredictQuery | PredictDeleteParams): HttpParams {
     let params = new HttpParams();
     Object.entries(query).forEach(([key, value]) => {
       if (value === undefined || value === null || value === '') return;

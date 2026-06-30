@@ -46,31 +46,22 @@
           <h2>空间分布</h2>
           <span>基于设备经纬度生成相对分布视图，用于快速识别设备覆盖范围。</span>
         </div>
-        <span class="result-chip">{{ locatedDevices.length }} 个点位</span>
+        <div class="map-tools">
+          <label class="distance-toggle">
+            <span>显示距离</span>
+            <nz-switch [(ngModel)]="showDistance" />
+          </label>
+          <span class="result-chip">{{ locatedDevices.length }} 个点位</span>
+        </div>
       </div>
 
       <nz-spin [nzSpinning]="loading">
-        @if (locatedDevices.length > 0) {
-          <div class="map-plane">
-            <div class="axis axis-x">经度</div>
-            <div class="axis axis-y">纬度</div>
-            @for (item of locatedDevices; track item.guid) {
-              <button
-                type="button"
-                class="device-marker"
-                [class.offline]="item.status !== 1"
-                [style.left.%]="markerLeft(item)"
-                [style.top.%]="markerTop(item)"
-                [title]="(item.alias || item.sncode) + ' · ' + coordinateText(item)"
-                (click)="edit(item)"
-              >
-                <span></span>
-              </button>
-            }
-          </div>
-        } @else {
-          <div class="empty-state">暂无可定位设备，请先在设备编辑页维护经纬度。</div>
-        }
+        <app-device-map
+          [devices]="locatedDevices"
+          [selectedSncode]="selectedSncode"
+          [showDistance]="showDistance"
+          (deviceSelect)="selectDevice($event)"
+        />
       </nz-spin>
     </nz-card>
 
@@ -83,7 +74,12 @@
       </div>
       <div class="device-list">
         @for (item of devices; track item.guid) {
-          <button type="button" class="device-row" (click)="edit(item)">
+          <button
+            type="button"
+            class="device-row"
+            [class.selected]="item.sncode === selectedSncode"
+            (click)="selectDevice(item)"
+          >
             <div>
               <strong>{{ item.alias || item.sncode }}</strong>
               <span>{{ item.sncode }} · {{ coordinateText(item) }}</span>

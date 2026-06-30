@@ -65,16 +65,47 @@
           <se-container [col]="2" labelWidth="118" size="compact">
             <se label="设备号" [col]="1">
               <div class="control-stack">
-                <textarea
-                  nz-input
+                <nz-select
                   formControlName="sncodes"
-                  rows="5"
-                  placeholder="多个设备号使用英文逗号、空格或换行分隔"
-                ></textarea>
+                  nzMode="multiple"
+                  nzShowSearch
+                  nzAllowClear
+                  [nzLoading]="devicesLoading"
+                  nzPlaceHolder="请选择参与计算的设备"
+                >
+                  @for (device of devices; track device.sncode) {
+                    <nz-option [nzValue]="device.sncode" [nzLabel]="deviceLabel(device)" />
+                  }
+                </nz-select>
                 <span>
-                  支持英文逗号、空格或换行分隔。设备号需与设备管理中的 sncode
-                  一致，否则不会匹配到有效心跳和预测数据。
+                  可多选设备管理中的设备号，保存后会作为格网差分计算的样本集合。
+                  未选择设备时，该格网不会匹配到有效心跳和预测数据。
                 </span>
+                <div class="sample-map-panel">
+                  <div class="sample-map-heading">
+                    <div>
+                      <strong>样本空间分布</strong>
+                      <span>基于已选设备的经纬度展示样本位置，辅助判断格网差分输入覆盖范围。</span>
+                    </div>
+                    <div class="sample-stats">
+                      <span>{{ selectedDeviceCount }} 台已选</span>
+                      <span>{{ selectedSampleDevices.length }} 台可定位</span>
+                    </div>
+                  </div>
+                  <app-device-map
+                    [devices]="selectedSampleDevices"
+                    [selectedSncode]="selectedSampleSncode"
+                    [showDistance]="true"
+                    [minHeight]="320"
+                    (deviceSelect)="selectSampleDevice($event)"
+                  />
+                  @if (selectedMissingCoordinateCount > 0) {
+                    <div class="sample-map-tip">
+                      {{ selectedMissingCoordinateCount }}
+                      台已选设备未维护经纬度，暂不展示在分布图中。
+                    </div>
+                  }
+                </div>
               </div>
             </se>
           </se-container>
