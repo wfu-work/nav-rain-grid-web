@@ -16,13 +16,13 @@ module.exports = {
     changeOrigin: true,
   },
   '/api/ws': {
-    target: 'http://127.0.0.1:18889',
+    target: 'https://rain-grid.navfirst.com',
     secure: false,
     ws: true,
     changeOrigin: true,
   },
   '/api/': {
-    target: 'http://127.0.0.1:18889/api/',
+    target: 'https://rain-grid.navfirst.com/api/',
     secure: false,
     pathRewrite: {
       '^/api/': '',

@@ -37,7 +37,7 @@ export class StartupService {
     this.menuService.clear();
     this.settingService.setApp({
       title: '降雨格网系统',
-      copyright: '武汉小兮科技',
+      copyright: '武汉守明科技有限公司',
       version: 'V1.0.0',
     });
     this.titleService.suffix = '降雨格网系统';
