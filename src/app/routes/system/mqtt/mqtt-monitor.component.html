@@ -1,0 +1,178 @@
+<section class="mqtt-page">
+  <div class="page-heading">
+    <title-label
+      title="MQTT 监控"
+      description="查看内置 MQTT Broker 的启用状态、监听端口、消息接收和最后上报情况。"
+    />
+    <div class="page-actions">
+      <span class="refresh-chip">更新 {{ formatTime(lastUpdated) }}</span>
+      <button nz-button nzType="primary" [nzLoading]="loading" (click)="getData()">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+    </div>
+  </div>
+
+  <nz-spin [nzSpinning]="loading">
+    @if (monitor; as item) {
+      <div class="intro-grid">
+        <div class="intro-card">
+          <i nz-icon nzType="api"></i>
+          <div>
+            <strong>接入说明</strong>
+            <span>
+              设备通过 MQTT 连接内置 Broker，上报心跳、设备别名、经纬度和降雨预测数据。Broker
+              收到消息后会分发给设备心跳处理器和预测数据处理器。
+            </span>
+          </div>
+        </div>
+        <div class="intro-card">
+          <i nz-icon nzType="profile"></i>
+          <div>
+            <strong>数据约定</strong>
+            <span>
+              心跳消息需要携带 sncode；预测消息需要包含设备号和 1、12、24
+              小时预测降雨值。字段缺失时消息会被接收，但不会形成有效业务数据。
+            </span>
+          </div>
+        </div>
+        <div class="intro-card">
+          <i nz-icon nzType="tool"></i>
+          <div>
+            <strong>排查建议</strong>
+            <span>
+              若消息总数不增长，请优先检查 MQTT 端口、防火墙、设备连接地址和系统设置中的 MQTT 开关。
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card" [class]="'metric-' + statusTone()">
+          <span>服务状态</span>
+          <strong>{{ statusText() }}</strong>
+          <em>{{ item.enable ? '配置已启用' : '配置未启用' }}</em>
+        </div>
+        <div class="metric-card primary">
+          <span>监听地址</span>
+          <strong>{{ item.address || '-' }}</strong>
+          <em>端口 {{ item.port || 1883 }}</em>
+        </div>
+        <div class="metric-card success">
+          <span>消息总数</span>
+          <strong>{{ item.totalMessages }}</strong>
+          <em>Broker 启动后累计收到的消息</em>
+        </div>
+        <div class="metric-card">
+          <span>处理器</span>
+          <strong>{{ item.handlerCount }}</strong>
+          <em>设备心跳、降雨预测等消息处理器</em>
+        </div>
+      </div>
+
+      <div class="monitor-layout mt-md">
+        <nz-card
+          class="monitor-card status-card"
+          [class]="'service-' + statusTone()"
+          [nzBordered]="false"
+        >
+          <div class="card-heading">
+            <div>
+              <h2>Broker 运行</h2>
+              <span>当前 Go 服务内置 MQTT Broker 的运行状态。</span>
+            </div>
+            <span class="status-chip" [class]="'status-' + statusTone()">{{ statusText() }}</span>
+          </div>
+
+          <div class="info-grid">
+            <div>
+              <span>启动时间</span>
+              <strong>{{ formatTime(item.startedAt) }}</strong>
+            </div>
+            <div>
+              <span>运行时长</span>
+              <strong>{{ durationSeconds(item.uptimeSeconds) }}</strong>
+            </div>
+            <div>
+              <span>Host</span>
+              <strong>{{ item.host || '0.0.0.0' }}</strong>
+            </div>
+            <div>
+              <span>采样时间</span>
+              <strong>{{ formatTime(item.checkedAt) }}</strong>
+            </div>
+          </div>
+
+          <div class="description-list">
+            <div>
+              <strong>监听地址</strong>
+              <span>
+                设备侧连接地址需要与当前监听地址保持一致；Host 为空时表示监听本机全部网卡。
+              </span>
+            </div>
+            <div>
+              <strong>处理器数量</strong>
+              <span
+                >当前系统默认注册设备心跳和降雨预测处理器，用于完成设备入库和预测数据入库。</span
+              >
+            </div>
+          </div>
+
+          @if (item.warnings.length > 0) {
+            <div class="warning-note">
+              <i nz-icon nzType="warning"></i>
+              <span>{{ item.warnings.join('；') }}</span>
+            </div>
+          }
+        </nz-card>
+
+        <nz-card class="monitor-card" [nzBordered]="false">
+          <div class="card-heading">
+            <div>
+              <h2>最近消息</h2>
+              <span>记录最后一条进入 Broker 的 MQTT 消息。</span>
+            </div>
+          </div>
+
+          <div class="message-panel">
+            <div>
+              <span>客户端</span>
+              <strong>{{ item.lastClientId || '-' }}</strong>
+            </div>
+            <div>
+              <span>Topic</span>
+              <strong>{{ item.lastTopic || '-' }}</strong>
+            </div>
+            <div>
+              <span>消息大小</span>
+              <strong>{{ formatBytes(item.lastPayloadSize) }}</strong>
+            </div>
+            <div>
+              <span>接收时间</span>
+              <strong>{{ formatTime(item.lastMessageAt) }}</strong>
+            </div>
+          </div>
+
+          <div class="description-list compact">
+            <div>
+              <strong>最近消息说明</strong>
+              <span>
+                这里展示的是 Broker 收到的最后一条消息原始入口信息。若 Topic
+                和客户端为空，表示服务启动后还没有收到设备上报。
+              </span>
+            </div>
+            <div>
+              <strong>业务落库说明</strong>
+              <span>
+                消息进入 Broker
+                不代表一定入库成功，设备号、预测时间和降雨字段需要满足解析规则后才会写入设备或预测数据表。
+              </span>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+    } @else {
+      <div class="empty-state">暂未读取到 MQTT 监控信息。</div>
+    }
+  </nz-spin>
+</section>

@@ -1,0 +1,100 @@
+<section class="predict-page">
+  <div class="page-heading">
+    <title-label
+      title="预测数据"
+      description="查看 MQTT 接收到的设备降雨预测数据，按基准时间聚合展示 1、12、24 小时预测值。"
+    />
+    <div class="page-actions">
+      <button nz-button (click)="getData()">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+    </div>
+  </div>
+
+  <nz-card class="list-card" [nzBordered]="false">
+    <div class="filter-panel">
+      <div class="filter-heading">
+        <div>
+          <strong>筛选预测数据</strong>
+          <span>按设备号和基准时间范围定位设备上报的预测降雨数据。</span>
+        </div>
+        <span class="result-chip">共 {{ total || 0 }} 组</span>
+      </div>
+
+      <div class="query-bar">
+        <nz-input-wrapper class="search-input">
+          <nz-icon nzInputPrefix nzType="search" />
+          <input
+            nz-input
+            [(ngModel)]="q.sncode"
+            placeholder="搜索设备号"
+            (keydown.enter)="search()"
+          />
+        </nz-input-wrapper>
+        <div class="filter-controls">
+          <input nz-input type="date" [(ngModel)]="q.startDate" />
+          <input nz-input type="date" [(ngModel)]="q.endDate" />
+        </div>
+        <div class="filter-actions">
+          <button nz-button nzType="primary" (click)="search()">
+            <i nz-icon nzType="search"></i>
+            搜索
+          </button>
+          <button nz-button (click)="resetQuery()">重置</button>
+        </div>
+      </div>
+    </div>
+
+    <st
+      [data]="data"
+      [columns]="columns"
+      [loading]="loading"
+      [pi]="q.page"
+      [ps]="q.size"
+      [total]="total"
+      [page]="{ front: false, showSize: true, pageSizes: [10, 20, 50], showQuickJumper: true }"
+      (change)="tableChange($event)"
+    >
+      <ng-template st-row="baseTimeRender" let-item>
+        <div class="strong">{{ formatTime(item.baseTime) }}</div>
+        <div class="muted mono">{{ item.baseTime }}</div>
+      </ng-template>
+
+      <ng-template st-row="devicesRender" let-item>
+        <div class="sncode-list">
+          @for (sncode of firstSncodes(item); track sncode) {
+            <span class="sncode-chip">{{ sncode }}</span>
+          }
+          @if (sncodes(item).length > 3) {
+            <span class="muted">+{{ sncodes(item).length - 3 }}</span>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template st-row="rainRender" let-item>
+        <div class="rain-list">
+          @for (predict of horizonItems(item); track predict.guid) {
+            <span class="rain-chip">
+              <strong>{{ typeLabel(predict.type) }}</strong>
+              <em
+                >{{ rainText(predict.predictRain) }} ·
+                {{ levelLabel(predict.predictRainLevel) }}</em
+              >
+            </span>
+          } @empty {
+            <span class="muted">暂无 1、12、24 小时预测值</span>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template st-row="countRender" let-item>
+        <span class="pill">{{ item.predictList.length }} 条</span>
+      </ng-template>
+
+      <ng-template st-row="updateTimeRender" let-item>
+        {{ formatTime(latestUpdate(item)) }}
+      </ng-template>
+    </st>
+  </nz-card>
+</section>

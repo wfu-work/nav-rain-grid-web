@@ -1,0 +1,112 @@
+<section class="settings-page">
+  <div class="page-heading">
+    <title-label title="系统设置" description="维护降雨格网系统的基础运行参数和默认配置。" />
+    <div class="page-actions">
+      <button nz-button type="button" (click)="resetDefault()">恢复默认</button>
+      <button nz-button nzType="primary" [nzLoading]="saving" (click)="save()">
+        <i nz-icon nzType="save"></i>
+        保存
+      </button>
+    </div>
+  </div>
+
+  <nz-spin [nzSpinning]="loading">
+    <form [formGroup]="form" class="settings-form" (ngSubmit)="save()">
+      <section class="settings-block">
+        <div class="block-heading">
+          <div class="block-icon">
+            <i nz-icon nzType="api"></i>
+          </div>
+          <div>
+            <h2>MQTT 服务</h2>
+            <span>配置内置 Broker 的启停状态和设备接入端口。</span>
+          </div>
+        </div>
+        <div class="block-intro">
+          MQTT
+          服务用于接收设备心跳和降雨预测上报数据。端口变更后，需要同步调整设备侧连接地址，并重启后端服务或按部署策略重新加载配置。
+        </div>
+        <se-container [col]="2" labelWidth="132" size="compact">
+          <se label="启用 MQTT">
+            <div class="control-stack">
+              <nz-switch formControlName="mqttEnable" />
+              <span>关闭后系统不再接收新的 MQTT 上报，已有设备和预测数据不会被删除。</span>
+            </div>
+          </se>
+          <se label="监听端口" required error="请输入 1-65535 的端口">
+            <div class="control-stack">
+              <nz-input-number
+                formControlName="mqttPort"
+                [nzMin]="1"
+                [nzMax]="65535"
+                [nzPrecision]="0"
+              />
+              <span>默认 1883，请确保服务器安全组、防火墙和设备连接配置保持一致。</span>
+            </div>
+          </se>
+        </se-container>
+      </section>
+
+      <section class="settings-block">
+        <div class="block-heading">
+          <div class="block-icon warning">
+            <i nz-icon nzType="clock-circle"></i>
+          </div>
+          <div>
+            <h2>设备状态</h2>
+            <span>配置设备心跳有效期，定时检测会据此更新在线状态。</span>
+          </div>
+        </div>
+        <div class="block-intro">
+          设备心跳会携带设备号、别名和经纬度。系统定时扫描最近心跳时间，超过阈值的设备会被标记为离线，用于工作台统计和运行监控告警。
+        </div>
+        <se-container [col]="2" labelWidth="132" size="compact">
+          <se label="心跳超时分钟" required error="请输入大于 0 的分钟数">
+            <div class="control-stack">
+              <nz-input-number
+                formControlName="heartbeatTimeoutMinutes"
+                [nzMin]="1"
+                [nzPrecision]="0"
+              />
+              <span>数值越小，离线判定越敏感；默认 10 分钟，适合分钟级心跳设备。</span>
+            </div>
+          </se>
+        </se-container>
+      </section>
+
+      <section class="settings-block">
+        <div class="block-heading">
+          <div class="block-icon success">
+            <i nz-icon nzType="export"></i>
+          </div>
+          <div>
+            <h2>格网输出</h2>
+            <span>配置降雨格网计算周期和 Excel 文件输出目录。</span>
+          </div>
+        </div>
+        <div class="block-intro">
+          系统会按计算周期读取 1、12、24
+          小时预测降雨数据，对启用格网的中心点进行差分计算，并将结果输出为 Excel 文件。
+        </div>
+        <se-container [col]="2" labelWidth="132" size="compact">
+          <se label="计算周期" required error="请输入 Cron 表达式">
+            <div class="control-stack">
+              <input nz-input formControlName="gridCron" placeholder="例如 0 * * * *" />
+              <span>默认 0 * * * *，表示每小时执行一次格网降雨计算。</span>
+            </div>
+          </se>
+          <se label="Excel 输出目录" required error="请输入输出目录">
+            <div class="control-stack">
+              <input
+                nz-input
+                formControlName="excelOutputDir"
+                placeholder="例如 exports/rain-grid"
+              />
+              <span>相对路径会写入后端运行目录；生产环境建议挂载到持久化磁盘。</span>
+            </div>
+          </se>
+        </se-container>
+      </section>
+    </form>
+  </nz-spin>
+</section>

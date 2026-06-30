@@ -1,0 +1,114 @@
+<section class="grid-edit-page">
+  <div class="page-heading">
+    <title-label [showBack]="true" [title]="pageTitle" [description]="pageDescription" />
+    <div class="page-actions">
+      <button nz-button type="button" (click)="back()">
+        <i nz-icon nzType="arrow-left"></i>
+        返回
+      </button>
+      <button nz-button nzType="primary" [nzLoading]="saving" (click)="save()">
+        <i nz-icon nzType="save"></i>
+        保存
+      </button>
+    </div>
+  </div>
+
+  <nz-card class="form-card" [nzBordered]="false">
+    <nz-spin [nzSpinning]="loading">
+      <form [formGroup]="form" class="grid-form" (ngSubmit)="save()">
+        <div class="form-intro">
+          <i nz-icon nzType="border"></i>
+          <div>
+            <strong>格网计算说明</strong>
+            <span>
+              格网配置用于定义参与降雨差分计算的设备样本和计算约束。启用后，系统会按计划输出
+              1、12、24 小时格网降雨 Excel 数据。
+            </span>
+          </div>
+        </div>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <h2>基础信息</h2>
+            <span>定义格网名称、空间分辨率和启用状态，便于运行监控和输出文件识别。</span>
+          </div>
+          <se-container [col]="2" labelWidth="118" size="compact">
+            <se label="格网名称" required error="请输入格网名称">
+              <div class="control-stack">
+                <input nz-input formControlName="name" placeholder="例如 中心城区 1km 格网" />
+                <span>建议包含区域和分辨率信息，方便在列表、工作台和导出文件中快速识别。</span>
+              </div>
+            </se>
+            <se label="分辨率">
+              <div class="control-stack">
+                <input nz-input formControlName="resolution" placeholder="例如 1km" />
+                <span>用于描述格网尺度，建议与实际中心点间距或业务输出精度保持一致。</span>
+              </div>
+            </se>
+            <se label="格网状态" required>
+              <div class="control-stack">
+                <nz-select formControlName="status">
+                  <nz-option [nzValue]="1" nzLabel="启用" />
+                  <nz-option [nzValue]="0" nzLabel="禁用" />
+                </nz-select>
+                <span>只有启用的格网会参与定时降雨差分计算和 Excel 输出。</span>
+              </div>
+            </se>
+          </se-container>
+        </section>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <h2>设备样本</h2>
+            <span>维护参与该格网计算的设备号集合，设备坐标和预测数据会作为差分输入。</span>
+          </div>
+          <se-container [col]="2" labelWidth="118" size="compact">
+            <se label="设备号" [col]="1">
+              <div class="control-stack">
+                <textarea
+                  nz-input
+                  formControlName="sncodes"
+                  rows="5"
+                  placeholder="多个设备号使用英文逗号、空格或换行分隔"
+                ></textarea>
+                <span>
+                  支持英文逗号、空格或换行分隔。设备号需与设备管理中的 sncode
+                  一致，否则不会匹配到有效心跳和预测数据。
+                </span>
+              </div>
+            </se>
+          </se-container>
+        </section>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <h2>计算约束</h2>
+            <span>控制格网中心点计算时的最少样本数量和空间距离约束。</span>
+          </div>
+          <se-container [col]="2" labelWidth="118" size="compact">
+            <se label="最少设备" required error="请输入大于 0 的设备数">
+              <div class="control-stack">
+                <nz-input-number formControlName="min_device" [nzMin]="1" [nzPrecision]="0" />
+                <span>当有效设备数低于该值时，计算结果可信度不足，建议保持默认 3 台以上。</span>
+              </div>
+            </se>
+            <se label="最小距离 km" required error="请输入大于等于 0 的距离">
+              <div class="control-stack">
+                <nz-input-number formControlName="min_distance" [nzMin]="0" [nzPrecision]="2" />
+                <span>用于过滤距离过近的样本点，降低单点密集分布对差分结果的影响。</span>
+              </div>
+            </se>
+          </se-container>
+        </section>
+
+        <div class="form-actions">
+          <button nz-button type="button" (click)="back()">取消</button>
+          <button nz-button nzType="primary" htmlType="submit" [nzLoading]="saving">
+            <i nz-icon nzType="save"></i>
+            保存
+          </button>
+        </div>
+      </form>
+    </nz-spin>
+  </nz-card>
+</section>

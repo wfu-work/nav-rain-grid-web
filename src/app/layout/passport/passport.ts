@@ -1,0 +1,54 @@
+import { Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { GlobalFooterModule } from '@delon/abc/global-footer';
+import { DA_SERVICE_TOKEN } from '@delon/auth';
+import { LogoComponent } from '@shared';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+
+@Component({
+  selector: 'layout-passport',
+  template: `
+    <div class="container">
+      <div class="wrap">
+        <div class="top">
+          <div class="header">
+            <logo class="logo" />
+            <span class="title">降雨差分格网</span>
+          </div>
+          <div class="desc">北斗气象格网配置与降雨差分控制系统</div>
+        </div>
+        <router-outlet />
+        <global-footer [links]="links">
+          Copyright
+          <i class="anticon anticon-copyright"></i> 2020-{{ year }}
+          <a href="//www.github.com" target="_blank">武汉守明科技有限公司</a>
+        </global-footer>
+      </div>
+    </div>
+  `,
+  styleUrls: ['./passport.less'],
+  imports: [RouterOutlet, GlobalFooterModule, LogoComponent, NzIconModule],
+})
+export class LayoutPassport {
+  private tokenSrv = inject(DA_SERVICE_TOKEN);
+  year = new Date().getFullYear();
+
+  links = [
+    {
+      title: '帮助',
+      href: '',
+    },
+    {
+      title: '隐私',
+      href: '',
+    },
+    {
+      title: '条款',
+      href: '',
+    },
+  ];
+
+  constructor() {
+    this.tokenSrv.clear();
+  }
+}

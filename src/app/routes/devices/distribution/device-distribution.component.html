@@ -1,0 +1,102 @@
+<section class="distribution-page">
+  <div class="page-heading">
+    <title-label
+      title="设备分布"
+      description="按设备经纬度查看 MQTT 接入设备的空间分布和在线状态。"
+    />
+    <div class="page-actions">
+      <button nz-button (click)="getData()">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+      <button nz-button nzType="primary" (click)="openList()">
+        <i nz-icon nzType="ordered-list"></i>
+        设备列表
+      </button>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <span>设备总数</span>
+      <strong>{{ devices.length }}</strong>
+      <em>已接入系统的设备记录</em>
+    </div>
+    <div class="summary-card success">
+      <span>在线设备</span>
+      <strong>{{ onlineTotal }}</strong>
+      <em>最近心跳仍在有效期内</em>
+    </div>
+    <div class="summary-card warning">
+      <span>离线设备</span>
+      <strong>{{ offlineTotal }}</strong>
+      <em>超过心跳超时阈值</em>
+    </div>
+    <div class="summary-card primary">
+      <span>可定位设备</span>
+      <strong>{{ locatedDevices.length }}</strong>
+      <em>{{ missingCoordinateTotal }} 台未设置坐标</em>
+    </div>
+  </div>
+
+  <div class="distribution-layout">
+    <nz-card class="map-card" [nzBordered]="false">
+      <div class="card-heading">
+        <div>
+          <h2>空间分布</h2>
+          <span>基于设备经纬度生成相对分布视图，用于快速识别设备覆盖范围。</span>
+        </div>
+        <span class="result-chip">{{ locatedDevices.length }} 个点位</span>
+      </div>
+
+      <nz-spin [nzSpinning]="loading">
+        @if (locatedDevices.length > 0) {
+          <div class="map-plane">
+            <div class="axis axis-x">经度</div>
+            <div class="axis axis-y">纬度</div>
+            @for (item of locatedDevices; track item.guid) {
+              <button
+                type="button"
+                class="device-marker"
+                [class.offline]="item.status !== 1"
+                [style.left.%]="markerLeft(item)"
+                [style.top.%]="markerTop(item)"
+                [title]="(item.alias || item.sncode) + ' · ' + coordinateText(item)"
+                (click)="edit(item)"
+              >
+                <span></span>
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">暂无可定位设备，请先在设备编辑页维护经纬度。</div>
+        }
+      </nz-spin>
+    </nz-card>
+
+    <nz-card class="list-card" [nzBordered]="false">
+      <div class="card-heading">
+        <div>
+          <h2>点位明细</h2>
+          <span>展示最近加载的设备坐标、状态和最后心跳时间。</span>
+        </div>
+      </div>
+      <div class="device-list">
+        @for (item of devices; track item.guid) {
+          <button type="button" class="device-row" (click)="edit(item)">
+            <div>
+              <strong>{{ item.alias || item.sncode }}</strong>
+              <span>{{ item.sncode }} · {{ coordinateText(item) }}</span>
+            </div>
+            <div class="row-side">
+              <em [class.offline]="item.status !== 1">{{ statusLabel(item.status) }}</em>
+              <span>{{ formatTime(item.last_time) }}</span>
+            </div>
+          </button>
+        } @empty {
+          <div class="empty-state compact">暂无设备数据。</div>
+        }
+      </div>
+    </nz-card>
+  </div>
+</section>

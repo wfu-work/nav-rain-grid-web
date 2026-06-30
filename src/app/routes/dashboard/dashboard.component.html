@@ -1,0 +1,248 @@
+<section class="dashboard-page">
+  <div class="page-heading">
+    <title-label title="工作台" description="总览设备心跳、格网配置和降雨格网计算基础数据。" />
+    <div class="page-actions">
+      <span class="refresh-chip">更新 {{ formatTime(lastUpdated) }}</span>
+      <button nz-button nzType="primary" [nzLoading]="loading" (click)="getData()">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-panels">
+    <a class="panel-link" routerLink="/devices/list">
+      <app-panel
+        icon="deployment-unit"
+        title="设备总数"
+        [value]="deviceValue"
+        [trend]="onlineDeviceTotal + ' 在线'"
+        trendType="neutral"
+      />
+    </a>
+    <a class="panel-link" routerLink="/devices/list">
+      <app-panel
+        icon="alert"
+        title="离线设备"
+        [value]="offlineValue"
+        trend="超过 10 分钟无心跳"
+        [trendType]="offlineDeviceTotal > 0 ? 'down' : 'neutral'"
+      />
+    </a>
+    <a class="panel-link" routerLink="/grids/list">
+      <app-panel
+        icon="border"
+        title="格网总数"
+        [value]="gridValue"
+        [trend]="enabledGridTotal + ' 启用'"
+        trendType="neutral"
+      />
+    </a>
+    <a class="panel-link" routerLink="/grids/list">
+      <app-panel
+        icon="check-circle"
+        title="启用格网"
+        [value]="enabledGridValue"
+        [trend]="disabledGridTotal + ' 禁用'"
+        trendType="neutral"
+      />
+    </a>
+  </div>
+
+  <div class="quick-grid">
+    @for (item of quickActions; track item.title) {
+      <a class="quick-action" [routerLink]="item.link">
+        <span><i nz-icon [nzType]="item.icon"></i></span>
+        <strong>{{ item.title }}</strong>
+        <em>{{ item.desc }}</em>
+      </a>
+    }
+  </div>
+
+  <div class="dashboard-layout">
+    <nz-card class="dashboard-card" [nzBordered]="false">
+      <div class="card-heading">
+        <div>
+          <h2>最近设备</h2>
+          <span>按后端列表顺序展示最近维护或心跳更新的设备。</span>
+        </div>
+        <a nz-button nzType="link" routerLink="/devices/list">查看全部</a>
+      </div>
+      <div class="record-list">
+        @for (item of recentDevices; track item.guid) {
+          <a class="record-row" routerLink="/devices/list">
+            <div class="row-main">
+              <strong>{{ item.alias || item.sncode }}</strong>
+              <span>{{ item.sncode }} · {{ coordinateText(item) }}</span>
+            </div>
+            <div class="row-side">
+              <em class="status" [class.status-off]="item.status !== 1">
+                {{ statusLabel(item.status) }}
+              </em>
+              <span>{{ formatTime(item.last_time) }}</span>
+            </div>
+          </a>
+        } @empty {
+          <div class="empty-state">暂无设备，先在设备管理中维护设备基础信息。</div>
+        }
+      </div>
+    </nz-card>
+
+    <nz-card class="dashboard-card" [nzBordered]="false">
+      <div class="card-heading">
+        <div>
+          <h2>格网配置</h2>
+          <span>格网设备集合、分辨率和差分约束概览。</span>
+        </div>
+        <a nz-button nzType="link" routerLink="/grids/list">查看全部</a>
+      </div>
+      <div class="record-list">
+        @for (item of grids; track item.guid) {
+          <a class="record-row" routerLink="/grids/list">
+            <div class="row-main">
+              <strong>{{ item.name }}</strong>
+              <span>
+                {{ item.resolution || '未设置分辨率' }} · {{ sncodeCount(item.sncodes) }} 台设备
+              </span>
+            </div>
+            <div class="row-side">
+              <em class="status" [class.status-off]="item.status !== 1">
+                {{ gridStatusLabel(item.status) }}
+              </em>
+              <span>最少 {{ item.min_device || 0 }} 台</span>
+            </div>
+          </a>
+        } @empty {
+          <div class="empty-state">暂无格网，先创建用于降雨差分计算的格网配置。</div>
+        }
+      </div>
+    </nz-card>
+  </div>
+
+  <nz-card
+    class="dashboard-card service-card"
+    [class]="'service-' + serviceHealthTone()"
+    [nzBordered]="false"
+  >
+    <div class="card-heading">
+      <div>
+        <h2>系统运行</h2>
+        <span>后端服务与部署服务器性能。</span>
+      </div>
+      <a nz-button nzType="link" routerLink="/system/monitor">监控</a>
+    </div>
+
+    @if (systemMonitor; as monitor) {
+      <div class="service-overview">
+        <div class="service-main">
+          <span class="status-chip" [class]="'status-' + serviceHealthTone()">
+            {{ monitor.service.status === 'running' ? '运行中' : '未知' }}
+          </span>
+          <strong>{{ durationSeconds(monitor.service.uptimeSeconds) }}</strong>
+          <em
+            >{{ monitor.service.name || 'nav-rain-grid-go' }} · PID
+            {{ monitor.service.pid || '-' }}</em
+          >
+        </div>
+
+        <div class="resource-list">
+          <div class="resource-row">
+            <div class="resource-head">
+              <span>CPU</span>
+              <strong>{{ cpuPercent() }}%</strong>
+            </div>
+            <nz-progress
+              [nzPercent]="cpuPercent()"
+              [nzStatus]="percentStatus(cpuPercent())"
+              [nzShowInfo]="false"
+            />
+          </div>
+          <div class="resource-row">
+            <div class="resource-head">
+              <span>内存</span>
+              <strong>{{ memoryPercent() }}%</strong>
+            </div>
+            <nz-progress
+              [nzPercent]="memoryPercent()"
+              [nzStatus]="percentStatus(memoryPercent())"
+              [nzShowInfo]="false"
+            />
+          </div>
+          <div class="resource-row">
+            @if (firstDisk(); as disk) {
+              <div class="resource-head">
+                <span>磁盘</span>
+                <strong>{{ diskPercent(disk) }}%</strong>
+              </div>
+              <nz-progress
+                [nzPercent]="diskPercent(disk)"
+                [nzStatus]="percentStatus(diskPercent(disk))"
+                [nzShowInfo]="false"
+              />
+            } @else {
+              <div class="resource-head">
+                <span>磁盘</span>
+                <strong>-</strong>
+              </div>
+              <div class="empty-line">暂无磁盘采样。</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="runtime-meta">
+        <div>
+          <span>Go / OS</span>
+          <strong>{{ monitor.service.goVersion }} · {{ monitor.service.goos }}</strong>
+        </div>
+        <div>
+          <span>进程内存</span>
+          <strong>{{ formatBytes(monitor.service.allocBytes) }}</strong>
+        </div>
+        <div>
+          <span>服务器内存</span>
+          <strong>{{ formatMb(monitor.ram.usedMb) }} / {{ formatMb(monitor.ram.totalMb) }}</strong>
+        </div>
+        <div>
+          <span>采样时间</span>
+          <strong>{{ formatTime(monitor.checkedAt) }}</strong>
+        </div>
+      </div>
+
+      @if (monitor.warnings.length > 0) {
+        <div class="warning-note">
+          <i nz-icon nzType="warning"></i>
+          <span>{{ monitor.warnings.join('；') }}</span>
+        </div>
+      }
+    } @else {
+      <div class="empty-state compact">暂未读取到系统运行信息。</div>
+    }
+  </nz-card>
+
+  <nz-card class="dashboard-card check-card" [nzBordered]="false">
+    <div class="card-heading">
+      <div>
+        <h2>运行检查</h2>
+        <span>围绕设备、格网和差分计算输入的关键检查项。</span>
+      </div>
+    </div>
+    <div class="rule-list">
+      @for (item of checks; track item.name) {
+        <a
+          class="rule-row"
+          [class.rule-success]="item.tone === 'success'"
+          [class.rule-warning]="item.tone === 'warning'"
+          [class.rule-idle]="item.tone === 'idle'"
+          [routerLink]="item.link"
+        >
+          <div>
+            <strong>{{ item.name }}</strong>
+            <span>{{ item.flow }}</span>
+          </div>
+          <em>{{ item.status }}</em>
+        </a>
+      }
+    </div>
+  </nz-card>
+</section>

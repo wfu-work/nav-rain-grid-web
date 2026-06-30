@@ -1,0 +1,139 @@
+<section class="grid-page">
+  <div class="page-heading">
+    <title-label
+      title="格网列表"
+      description="维护参与格网差分计算的设备集合、分辨率与计算约束。"
+    />
+    <div class="page-actions">
+      <button nz-button (click)="getData()">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+      <button nz-button nzType="primary" (click)="create()">
+        <i nz-icon nzType="plus"></i>
+        新建格网
+      </button>
+    </div>
+  </div>
+
+  <nz-card class="list-card" [nzBordered]="false">
+    <div class="filter-panel">
+      <div class="filter-heading">
+        <div>
+          <strong>筛选格网</strong>
+          <span>按格网名称、设备号、分辨率和启用状态定位计算配置。</span>
+        </div>
+        <span class="result-chip">共 {{ total || 0 }} 条</span>
+      </div>
+
+      <div class="query-bar">
+        <nz-input-wrapper class="search-input">
+          <nz-icon nzInputPrefix nzType="search" />
+          <input
+            nz-input
+            [(ngModel)]="q.content"
+            placeholder="搜索格网名称、设备号或分辨率"
+            (keydown.enter)="search()"
+          />
+        </nz-input-wrapper>
+        <div class="filter-controls">
+          <input
+            nz-input
+            [(ngModel)]="q.resolution"
+            placeholder="分辨率"
+            (keydown.enter)="search()"
+          />
+          <nz-select [(ngModel)]="q.status" nzPlaceHolder="状态" (ngModelChange)="search()">
+            <nz-option nzValue="" nzLabel="全部状态" />
+            <nz-option nzValue="1" nzLabel="启用" />
+            <nz-option nzValue="0" nzLabel="禁用" />
+          </nz-select>
+        </div>
+        <div class="filter-actions">
+          <button nz-button nzType="primary" (click)="search()">
+            <i nz-icon nzType="search"></i>
+            搜索
+          </button>
+          <button nz-button (click)="resetQuery()">重置</button>
+        </div>
+      </div>
+    </div>
+
+    <st
+      [data]="data"
+      [columns]="columns"
+      [loading]="loading"
+      [pi]="q.page"
+      [ps]="q.size"
+      [total]="total"
+      [page]="{ front: false, showSize: true, pageSizes: [10, 20, 50], showQuickJumper: true }"
+      (change)="tableChange($event)"
+    >
+      <ng-template st-row="nameRender" let-item>
+        <div class="strong">{{ item.name }}</div>
+        <div class="muted mono">{{ item.guid }}</div>
+      </ng-template>
+
+      <ng-template st-row="sncodesRender" let-item>
+        @if (sncodeCount(item.sncodes) > 0) {
+          <div class="sncode-list">
+            @for (sncode of firstSncodes(item.sncodes); track sncode) {
+              <span class="sncode-chip">{{ sncode }}</span>
+            }
+            @if (sncodeCount(item.sncodes) > 3) {
+              <span class="muted">+{{ sncodeCount(item.sncodes) - 3 }}</span>
+            }
+          </div>
+          <div class="muted">共 {{ sncodeCount(item.sncodes) }} 台设备</div>
+        } @else {
+          <span class="muted">未配置设备</span>
+        }
+      </ng-template>
+
+      <ng-template st-row="resolutionRender" let-item>
+        <span class="pill">{{ item.resolution || '未设置' }}</span>
+      </ng-template>
+
+      <ng-template st-row="paramsRender" let-item>
+        <div>最少 {{ item.min_device || 0 }} 台</div>
+        <div class="muted">距离 {{ item.min_distance || 0 }} km</div>
+      </ng-template>
+
+      <ng-template st-row="statusRender" let-item>
+        <span class="status" [class.status-off]="item.status !== 1">
+          {{ statusLabel(item.status) }}
+        </span>
+      </ng-template>
+
+      <ng-template st-row="timeRender" let-item>
+        {{ formatTime(item.updateTime) }}
+      </ng-template>
+
+      <ng-template st-row="actionsRender" let-item>
+        <div class="action-col">
+          <button
+            nz-button
+            nzType="link"
+            class="action-button"
+            aria-label="编辑"
+            (click)="edit(item)"
+          >
+            <i nz-icon nzType="edit"></i>
+            <span>编辑</span>
+          </button>
+          <button
+            nz-button
+            nzType="link"
+            class="action-button"
+            aria-label="删除"
+            nzDanger
+            (click)="remove(item)"
+          >
+            <i nz-icon nzType="delete"></i>
+            <span>删除</span>
+          </button>
+        </div>
+      </ng-template>
+    </st>
+  </nz-card>
+</section>

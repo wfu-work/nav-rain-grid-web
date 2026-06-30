@@ -1,0 +1,126 @@
+<section class="device-edit-page">
+  <div class="page-heading">
+    <title-label [showBack]="true" [title]="pageTitle" [description]="pageDescription" />
+    <div class="page-actions">
+      <button nz-button type="button" (click)="back()">
+        <i nz-icon nzType="arrow-left"></i>
+        返回
+      </button>
+      <button nz-button nzType="primary" [nzLoading]="saving" (click)="save()">
+        <i nz-icon nzType="save"></i>
+        保存
+      </button>
+    </div>
+  </div>
+
+  <nz-card class="form-card" [nzBordered]="false">
+    <nz-spin [nzSpinning]="loading">
+      <form [formGroup]="form" class="device-form" (ngSubmit)="save()">
+        <div class="form-intro">
+          <i nz-icon nzType="deployment-unit"></i>
+          <div>
+            <strong>设备接入说明</strong>
+            <span>
+              设备号用于匹配 MQTT
+              上报数据；设备心跳会持续刷新最后在线时间，降雨预测和格网计算依赖设备坐标与能力开关。
+            </span>
+          </div>
+        </div>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <h2>设备标识</h2>
+            <span>维护设备在系统内的唯一编号、现场展示名称和运行状态。</span>
+          </div>
+          <se-container [col]="2" labelWidth="118" size="compact">
+            <se label="设备号" required error="请输入设备号">
+              <div class="control-stack">
+                <input nz-input formControlName="sncode" placeholder="例如 RAIN-001" />
+                <span
+                  >必须与设备 MQTT 心跳中的 sncode 保持一致，保存后用于关联心跳和预测数据。</span
+                >
+              </div>
+            </se>
+            <se label="设备别名">
+              <div class="control-stack">
+                <input nz-input formControlName="alias" placeholder="现场展示名称" />
+                <span>用于列表、工作台和运行监控展示；为空时默认显示设备号。</span>
+              </div>
+            </se>
+            <se label="设备类型">
+              <div class="control-stack">
+                <input nz-input formControlName="type" placeholder="例如 rain-gauge" />
+                <span>可记录设备型号或业务分类，便于后续筛选和运维排查。</span>
+              </div>
+            </se>
+            <se label="设备状态" required>
+              <div class="control-stack">
+                <nz-select formControlName="status">
+                  <nz-option [nzValue]="1" nzLabel="在线" />
+                  <nz-option [nzValue]="0" nzLabel="离线" />
+                </nz-select>
+                <span>心跳定时检测会自动更新状态，手动调整适合初始化或现场维护场景。</span>
+              </div>
+            </se>
+          </se-container>
+        </section>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <h2>空间位置</h2>
+            <span>配置设备经纬度和高程，作为格网中心点降雨差分计算的基础输入。</span>
+          </div>
+          <se-container [col]="2" labelWidth="118" size="compact">
+            <se label="经度">
+              <div class="control-stack">
+                <nz-input-number formControlName="lng" [nzPrecision]="6" />
+                <span>建议使用 WGS84 坐标系，精度保留 6 位小数即可满足格网计算。</span>
+              </div>
+            </se>
+            <se label="纬度">
+              <div class="control-stack">
+                <nz-input-number formControlName="lat" [nzPrecision]="6" />
+                <span>经纬度缺失时，设备无法作为有效空间样本参与格网差分。</span>
+              </div>
+            </se>
+            <se label="高程">
+              <div class="control-stack">
+                <nz-input-number formControlName="alt" [nzPrecision]="2" />
+                <span>可选字段，用于记录安装点海拔或后续扩展的空间修正参数。</span>
+              </div>
+            </se>
+          </se-container>
+        </section>
+
+        <section class="form-section">
+          <div class="section-heading">
+            <h2>能力开关</h2>
+            <span>标记设备上报能力，决定设备是否进入对应业务数据处理流程。</span>
+          </div>
+          <se-container [col]="2" labelWidth="118" size="compact">
+            <se label="北斗水位计">
+              <div class="control-stack">
+                <nz-switch formControlName="gsw" />
+                <span>开启后表示该设备具备北斗水位计能力，便于后续水位业务扩展。</span>
+              </div>
+            </se>
+            <se label="降雨预测">
+              <div class="control-stack">
+                <nz-switch formControlName="rain" />
+                <span>开启后该设备的 1、12、24 小时预测降雨可参与格网输出。</span>
+              </div>
+            </se>
+          </se-container>
+        </section>
+
+        <div class="form-actions">
+          <button nz-button type="button" (click)="back()">取消</button>
+          <button nz-button nzType="primary" htmlType="submit" [nzLoading]="saving">
+            <i nz-icon nzType="save"></i>
+            保存
+          </button>
+        </div>
+      </form>
+    </nz-spin>
+  </nz-card>
+</section>
