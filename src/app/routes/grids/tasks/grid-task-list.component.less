@@ -1,0 +1,136 @@
+:host {
+  display: block;
+}
+
+.grid-task-page {
+  display: grid;
+  gap: 18px;
+}
+
+.page-heading {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.list-card {
+  border-radius: 8px;
+}
+
+.filter-panel {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.filter-heading {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  strong {
+    display: block;
+    color: #172033;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  span {
+    display: block;
+    color: #778397;
+    line-height: 22px;
+  }
+}
+
+.result-chip,
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--nm-primary);
+  font-weight: 700;
+  background: rgb(var(--nm-primary-rgb) / 9%);
+}
+
+.query-bar {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(160px, 220px) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-input,
+.filter-controls nz-select {
+  width: 100%;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.strong {
+  color: #172033;
+  font-weight: 700;
+}
+
+.muted {
+  color: #7f8a9d;
+}
+
+.mono {
+  overflow: hidden;
+  max-width: 210px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #0d7a48;
+  font-size: 13px;
+  font-weight: 700;
+  background: rgb(11 173 103 / 12%);
+}
+
+.status-off {
+  color: #b42318;
+  background: rgb(217 45 32 / 12%);
+}
+
+.error-text {
+  color: #b42318;
+}
+
+@media (max-width: 900px) {
+  .page-heading,
+  .filter-heading {
+    flex-direction: column;
+  }
+
+  .query-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+  }
+}

@@ -1,0 +1,100 @@
+<section class="grid-task-page">
+  <div class="page-heading">
+    <title-label
+      title="格网任务"
+      description="查看每个整点格网差分任务的执行结果、点位规模和数据更新时间。"
+    />
+    <div class="page-actions">
+      <button nz-button (click)="getData()">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+    </div>
+  </div>
+
+  <nz-card class="list-card" [nzBordered]="false">
+    <div class="filter-panel">
+      <div class="filter-heading">
+        <div>
+          <strong>筛选任务</strong>
+          <span>按格网名称、任务状态或错误信息定位差分批次。</span>
+        </div>
+        <span class="result-chip">共 {{ total || 0 }} 条</span>
+      </div>
+
+      <div class="query-bar">
+        <nz-input-wrapper class="search-input">
+          <nz-icon nzInputPrefix nzType="search" />
+          <input
+            nz-input
+            [(ngModel)]="q.content"
+            placeholder="搜索格网名称或错误信息"
+            (keydown.enter)="search()"
+          />
+        </nz-input-wrapper>
+        <div class="filter-controls">
+          <nz-select [(ngModel)]="q.status" nzPlaceHolder="状态" (ngModelChange)="search()">
+            <nz-option nzValue="" nzLabel="全部状态" />
+            <nz-option nzValue="1" nzLabel="成功" />
+            <nz-option nzValue="2" nzLabel="失败" />
+          </nz-select>
+        </div>
+        <div class="filter-actions">
+          <button nz-button nzType="primary" (click)="search()">
+            <i nz-icon nzType="search"></i>
+            搜索
+          </button>
+          <button nz-button (click)="resetQuery()">重置</button>
+        </div>
+      </div>
+    </div>
+
+    <st
+      [data]="data"
+      [columns]="columns"
+      [loading]="loading"
+      [pi]="q.page"
+      [ps]="q.size"
+      [total]="total"
+      [page]="{ front: false, showSize: true, pageSizes: [10, 20, 50], showQuickJumper: true }"
+      (change)="tableChange($event)"
+    >
+      <ng-template st-row="taskRender" let-item>
+        <div class="strong">{{ item.gridName || '未命名格网' }}</div>
+        <div class="muted mono">{{ item.guid }}</div>
+      </ng-template>
+
+      <ng-template st-row="baseTimeRender" let-item>
+        <div>{{ formatTime(item.baseTime) }}</div>
+        <div class="muted">整点预测基准</div>
+      </ng-template>
+
+      <ng-template st-row="gridRender" let-item>
+        <div>{{ resolutionText(item.resolution) }}</div>
+        <div class="muted">约 {{ kilometerText(item.resolution) }}</div>
+      </ng-template>
+
+      <ng-template st-row="pointRender" let-item>
+        <span class="pill">{{ item.pointCount || 0 }}</span>
+      </ng-template>
+
+      <ng-template st-row="statusRender" let-item>
+        <span class="status" [class.status-off]="item.status !== 1">
+          {{ statusLabel(item.status) }}
+        </span>
+      </ng-template>
+
+      <ng-template st-row="timeRender" let-item>
+        {{ formatTime(item.updateTime || item.createTime) }}
+      </ng-template>
+
+      <ng-template st-row="errorRender" let-item>
+        @if (item.errorMsg) {
+          <span class="error-text">{{ item.errorMsg }}</span>
+        } @else {
+          <span class="muted">-</span>
+        }
+      </ng-template>
+    </st>
+  </nz-card>
+</section>

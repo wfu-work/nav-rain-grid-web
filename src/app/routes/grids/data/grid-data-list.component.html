@@ -1,0 +1,102 @@
+<section class="grid-data-page">
+  <div class="page-heading">
+    <title-label
+      title="格网数据"
+      description="查看格网中心点的 1 / 12 / 24 小时差分降雨结果。"
+    />
+    <div class="page-actions">
+      <button nz-button (click)="getData()">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+    </div>
+  </div>
+
+  <nz-card class="list-card" [nzBordered]="false">
+    <div class="filter-panel">
+      <div class="filter-heading">
+        <div>
+          <strong>筛选点位</strong>
+          <span>按格网名称、任务 GUID 或格网 GUID 定位差分结果。</span>
+        </div>
+        <span class="result-chip">共 {{ total || 0 }} 条</span>
+      </div>
+
+      <div class="query-bar">
+        <nz-input-wrapper class="search-input">
+          <nz-icon nzInputPrefix nzType="search" />
+          <input
+            nz-input
+            [(ngModel)]="q.content"
+            placeholder="搜索格网名称、任务 GUID 或格网 GUID"
+            (keydown.enter)="search()"
+          />
+        </nz-input-wrapper>
+        <input
+          nz-input
+          [(ngModel)]="q.taskGuid"
+          placeholder="任务 GUID"
+          (keydown.enter)="search()"
+        />
+        <div class="filter-actions">
+          <button nz-button nzType="primary" (click)="search()">
+            <i nz-icon nzType="search"></i>
+            搜索
+          </button>
+          <button nz-button (click)="resetQuery()">重置</button>
+        </div>
+      </div>
+    </div>
+
+    <st
+      [data]="data"
+      [columns]="columns"
+      [loading]="loading"
+      [pi]="q.page"
+      [ps]="q.size"
+      [total]="total"
+      [page]="{ front: false, showSize: true, pageSizes: [10, 20, 50], showQuickJumper: true }"
+      (change)="tableChange($event)"
+    >
+      <ng-template st-row="gridRender" let-item>
+        <div class="strong">{{ item.gridName || '未命名格网' }}</div>
+        <div class="muted mono">{{ item.taskGuid }}</div>
+      </ng-template>
+
+      <ng-template st-row="centerRender" let-item>
+        <div class="coordinate-line">经度 {{ coordinateText(item.centerLng) }}</div>
+        <div class="muted">纬度 {{ coordinateText(item.centerLat) }}</div>
+      </ng-template>
+
+      <ng-template st-row="baseTimeRender" let-item>
+        <div>{{ formatTime(item.baseTime) }}</div>
+        <div class="muted">整点预测基准</div>
+      </ng-template>
+
+      <ng-template st-row="rain1hRender" let-item>
+        <div class="rain-value">{{ rainText(item.predictRain1h) }}</div>
+        <span [class]="'level ' + levelClass(item.predictRainLevel1h)">
+          {{ levelLabel(item.predictRainLevel1h) }}
+        </span>
+      </ng-template>
+
+      <ng-template st-row="rain12hRender" let-item>
+        <div class="rain-value">{{ rainText(item.predictRain12h) }}</div>
+        <span [class]="'level ' + levelClass(item.predictRainLevel12h)">
+          {{ levelLabel(item.predictRainLevel12h) }}
+        </span>
+      </ng-template>
+
+      <ng-template st-row="rain24hRender" let-item>
+        <div class="rain-value">{{ rainText(item.predictRain24h) }}</div>
+        <span [class]="'level ' + levelClass(item.predictRainLevel24h)">
+          {{ levelLabel(item.predictRainLevel24h) }}
+        </span>
+      </ng-template>
+
+      <ng-template st-row="timeRender" let-item>
+        {{ formatTime(item.updateTime || item.createTime) }}
+      </ng-template>
+    </st>
+  </nz-card>
+</section>

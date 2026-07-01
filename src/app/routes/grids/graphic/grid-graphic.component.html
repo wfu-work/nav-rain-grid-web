@@ -1,0 +1,152 @@
+<section class="grid-graphic-page">
+  <div class="page-heading">
+    <title-label
+      title="格网图形"
+      description="以地图热力图形式查看格网中心点的降雨差分强度和空间分布。"
+    />
+    <div class="page-actions">
+      <button nz-button [nzLoading]="loading" (click)="getData()">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+    </div>
+  </div>
+
+  <nz-card class="graphic-card" [nzBordered]="false">
+    <div class="filter-panel">
+      <div class="filter-heading">
+        <div>
+          <strong>图形筛选</strong>
+          <span>选择格网任务和预测时效后，热力图会按对应降雨值重新着色。</span>
+        </div>
+        <span class="result-chip">{{ summary.valid }} 个有效点</span>
+      </div>
+
+      <div class="query-bar">
+        <nz-select
+          [(ngModel)]="q.gridGuid"
+          nzAllowClear
+          nzShowSearch
+          nzPlaceHolder="全部格网"
+          [nzLoading]="optionsLoading"
+          (ngModelChange)="onGridChange($event || '')"
+        >
+          @for (grid of grids; track grid.guid) {
+            <nz-option [nzValue]="grid.guid" [nzLabel]="grid.name" />
+          }
+        </nz-select>
+        <nz-select
+          [(ngModel)]="q.taskGuid"
+          nzAllowClear
+          nzShowSearch
+          nzPlaceHolder="选择格网任务"
+          [nzLoading]="optionsLoading"
+          (ngModelChange)="onTaskChange($event || '')"
+        >
+          @for (task of filteredTasks; track task.guid) {
+            <nz-option [nzValue]="task.guid" [nzLabel]="taskLabel(task)" />
+          }
+        </nz-select>
+        <nz-select [(ngModel)]="q.horizon" nzPlaceHolder="预测时效">
+          @for (item of horizonOptions; track item.value) {
+            <nz-option [nzValue]="item.value" [nzLabel]="item.label" />
+          }
+        </nz-select>
+        <div class="filter-actions">
+          <button nz-button nzType="primary" [nzLoading]="loading" (click)="getData()">
+            <i nz-icon nzType="search"></i>
+            查询
+          </button>
+          <button nz-button (click)="resetQuery()">重置</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <span>点位总数</span>
+        <strong>{{ summary.total }}</strong>
+        <em>{{ summary.valid }} 个带坐标</em>
+      </div>
+      <div class="summary-card primary">
+        <span>最大降雨</span>
+        <strong>{{ rainText(summary.maxRain) }}</strong>
+        <em>{{ q.horizon }} 预测时效</em>
+      </div>
+      <div class="summary-card success">
+        <span>平均降雨</span>
+        <strong>{{ rainText(summary.avgRain) }}</strong>
+        <em>按有效点位计算</em>
+      </div>
+      <div class="summary-card warning">
+        <span>重点区域</span>
+        <strong>{{ summary.warningCount }}</strong>
+        <em>大雨及以上点位</em>
+      </div>
+    </div>
+
+    <nz-spin [nzSpinning]="loading">
+      <div class="heat-layout">
+        <div class="heat-map-card">
+          <div class="card-heading">
+            <div>
+              <h2>格网热力图</h2>
+              <span>圆斑越大代表当前预测时效下的差分降雨越强。</span>
+            </div>
+            <div class="legend">
+              <span><i class="legend-none"></i>无雨</span>
+              <span><i class="legend-light"></i>小雨</span>
+              <span><i class="legend-medium"></i>中雨</span>
+              <span><i class="legend-heavy"></i>大雨+</span>
+            </div>
+          </div>
+
+          <div class="heat-map-plane">
+            <span class="axis axis-y">纬度</span>
+            <span class="axis axis-x">经度</span>
+            @for (point of heatPoints; track point.key) {
+              <button
+                type="button"
+                class="heat-point"
+                [style.left.%]="point.left"
+                [style.top.%]="point.top"
+                [style.width.px]="point.size"
+                [style.height.px]="point.size"
+                [style.--heat-color]="point.color"
+                [attr.title]="point.tooltip"
+              >
+                <span>{{ point.rain.toFixed(2) }}</span>
+              </button>
+            } @empty {
+              <div class="empty-state">暂无可绘制的格网点位，请先生成格网差分数据。</div>
+            }
+          </div>
+        </div>
+
+        <aside class="rank-card">
+          <div class="card-heading compact">
+            <div>
+              <h2>降雨强度排行</h2>
+              <span>展示当前时效下雨量最高的点位。</span>
+            </div>
+          </div>
+          <div class="rank-list">
+            @for (point of topPoints; track point.key; let index = $index) {
+              <div class="rank-row">
+                <b>{{ index + 1 }}</b>
+                <div>
+                  <strong>{{ point.label }}</strong>
+                  <span>{{ point.coordinate }}</span>
+                  <span>{{ point.time }} · {{ levelLabel(point.level) }}</span>
+                </div>
+                <em>{{ rainText(point.rain) }}</em>
+              </div>
+            } @empty {
+              <div class="empty-state compact">暂无排行数据。</div>
+            }
+          </div>
+        </aside>
+      </div>
+    </nz-spin>
+  </nz-card>
+</section>

@@ -1,0 +1,152 @@
+:host {
+  display: block;
+}
+
+.grid-data-page {
+  display: grid;
+  gap: 18px;
+}
+
+.page-heading {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.list-card {
+  border-radius: 8px;
+}
+
+.filter-panel {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.filter-heading {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  strong {
+    display: block;
+    color: #172033;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  span {
+    display: block;
+    color: #778397;
+    line-height: 22px;
+  }
+}
+
+.result-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--nm-primary);
+  font-weight: 700;
+  background: rgb(var(--nm-primary-rgb) / 9%);
+}
+
+.query-bar {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(220px, 0.5fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.strong {
+  color: #172033;
+  font-weight: 700;
+}
+
+.muted {
+  color: #7f8a9d;
+}
+
+.mono {
+  overflow: hidden;
+  max-width: 210px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coordinate-line,
+.rain-value {
+  color: #172033;
+  font-weight: 700;
+}
+
+.level {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: #5d6b82;
+  font-size: 12px;
+  font-weight: 700;
+  background: #eef2f7;
+}
+
+.level-none {
+  color: #475467;
+  background: #f2f4f7;
+}
+
+.level-light {
+  color: #067647;
+  background: #dcfae6;
+}
+
+.level-medium {
+  color: #b54708;
+  background: #fef0c7;
+}
+
+.level-heavy,
+.level-storm {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+@media (max-width: 900px) {
+  .page-heading,
+  .filter-heading {
+    flex-direction: column;
+  }
+
+  .query-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+  }
+}

@@ -637,7 +637,12 @@ export class BasicMenusComponent {
     {
       title: '格网管理',
       icon: 'deployment-unit',
-      children: [{ label: '格网列表', link: '/grids/list', icon: 'deployment-unit' }],
+      children: [
+        { label: '格网列表', link: '/grids/list', icon: 'deployment-unit' },
+        { label: '格网任务', link: '/grids/tasks', icon: 'schedule' },
+        { label: '格网数据', link: '/grids/data', icon: 'table' },
+        { label: '格网图形', link: '/grids/graphic', icon: 'dot-chart' },
+      ],
     },
     {
       title: '系统设置',

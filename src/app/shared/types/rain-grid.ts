@@ -49,6 +49,40 @@ export interface SaveGridPayload {
   status?: number;
 }
 
+export interface GridDiffTask {
+  guid: string;
+  gridGuid: string;
+  gridName: string;
+  baseTime: number;
+  resolution: number;
+  pointCount: number;
+  status: number;
+  errorMsg?: string;
+  createTime?: number;
+  updateTime?: number;
+}
+
+export interface GridDiffPoint {
+  guid: string;
+  taskGuid: string;
+  gridGuid: string;
+  gridName: string;
+  baseTime: number;
+  centerLng: number;
+  centerLat: number;
+  predictTime1h: number;
+  predictRain1h: number;
+  predictRainLevel1h: number;
+  predictTime12h: number;
+  predictRain12h: number;
+  predictRainLevel12h: number;
+  predictTime24h: number;
+  predictRain24h: number;
+  predictRainLevel24h: number;
+  createTime?: number;
+  updateTime?: number;
+}
+
 export interface Predict {
   guid: string;
   baseTime: number;
