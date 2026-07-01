@@ -48,6 +48,75 @@
   }
 }
 
+:host-context(.nm-theme-dark) {
+  ::ng-deep {
+    h3 {
+      color: rgb(248 250 252 / 96%);
+    }
+
+    .ant-input-affix-wrapper,
+    nz-input-wrapper {
+      border-color: rgb(148 163 184 / 24%) !important;
+      color: rgb(248 250 252 / 94%) !important;
+      background: rgb(8 15 29 / 62%) !important;
+      border-radius: 12px;
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+    }
+
+    .ant-input-affix-wrapper:hover,
+    .ant-input-affix-wrapper-focused {
+      border-color: rgb(var(--nm-primary-rgb) / 56%) !important;
+      background: rgb(12 22 38 / 86%) !important;
+      box-shadow: 0 0 0 3px rgb(var(--nm-primary-rgb) / 14%) !important;
+    }
+
+    .ant-input,
+    input {
+      color: rgb(248 250 252 / 94%) !important;
+      background: transparent !important;
+    }
+
+    .ant-input::placeholder,
+    input::placeholder {
+      color: rgb(203 213 225 / 52%) !important;
+    }
+
+    .ant-input-prefix,
+    .ant-input-suffix,
+    .anticon {
+      color: rgb(203 213 225 / 70%) !important;
+    }
+
+    .ant-checkbox-wrapper {
+      color: rgb(226 232 240 / 74%);
+    }
+
+    .ant-checkbox-inner {
+      border-color: rgb(148 163 184 / 32%);
+      background: rgb(8 15 29 / 62%);
+    }
+
+    .ant-checkbox-checked .ant-checkbox-inner {
+      border-color: var(--nm-primary);
+      background: var(--nm-primary);
+    }
+
+    .ant-form-item-explain-error {
+      color: #fca5a5;
+    }
+
+    .ant-alert-error {
+      border-color: rgb(248 113 113 / 28%);
+      color: #fecaca;
+      background: rgb(127 29 29 / 20%);
+    }
+
+    .ant-alert-error .ant-alert-icon {
+      color: #fca5a5;
+    }
+  }
+}
+
 [data-theme='dark'] {
   :host ::ng-deep {
     .icon {

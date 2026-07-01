@@ -5,7 +5,13 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_IMPORTS, TitleLabelComponent } from '@shared';
 import { Device, Grid, SaveGridPayload } from '@shared/types/rain-grid';
@@ -19,6 +25,21 @@ import { GridsService } from '../grids.service';
 interface GridRouteState {
   grid?: Grid;
 }
+
+interface ResolutionOption {
+  label: string;
+  value: number;
+}
+
+const minArrayLength =
+  (minLength: number): ValidatorFn =>
+  (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    const length = Array.isArray(value) ? value.length : 0;
+    return length >= minLength
+      ? null
+      : { minArrayLength: { requiredLength: minLength, actualLength: length } };
+  };
 
 @Component({
   selector: 'app-grid-edit',
@@ -43,13 +64,17 @@ export class GridEditComponent implements OnInit {
   protected grid: Grid | null = null;
   protected devices: Device[] = [];
   protected selectedSampleSncode = '';
+  protected readonly resolutionOptions: ResolutionOption[] = [
+    { label: '1 公里（0.01）', value: 0.01 },
+    { label: '2 公里（0.02）', value: 0.02 },
+  ];
 
   protected readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
-    sncodes: this.fb.control<string[]>([]),
-    resolution: ['1km'],
-    min_device: [3, [Validators.required, Validators.min(1)]],
-    min_distance: [3, [Validators.required, Validators.min(0)]],
+    sncodes: this.fb.control<string[]>([], [minArrayLength(3), this.deviceSampleValidator()]),
+    resolution: [0.01, [Validators.required]],
+    minDevice: [3, [Validators.required, Validators.min(3)]],
+    minDistance: [5, [Validators.required, Validators.min(3)]],
     status: [1, [Validators.required]],
   });
 
@@ -88,9 +113,9 @@ export class GridEditComponent implements OnInit {
     const payload: SaveGridPayload = {
       name: this.trim(value.name),
       sncodes: this.normalizeSncodes(value.sncodes),
-      resolution: this.trim(value.resolution),
-      min_device: Number(value.min_device ?? 1),
-      min_distance: Number(value.min_distance ?? 0),
+      resolution: this.normalizeResolution(value.resolution),
+      minDevice: Number(value.minDevice ?? 3),
+      minDistance: Number(value.minDistance ?? 5),
       status: Number(value.status ?? 0),
     };
 
@@ -129,6 +154,22 @@ export class GridEditComponent implements OnInit {
     return this.selectedDeviceCount - this.selectedSampleDevices.length;
   }
 
+  protected sampleDeviceErrorMessage(): string {
+    const control = this.form.controls.sncodes;
+    const errors = control.errors;
+    if (!errors || (!control.dirty && !control.touched)) return '';
+    if (errors['minArrayLength']) return '请至少选择 3 台参与计算的设备。';
+    if (errors['missingCoordinate']) {
+      const names = (errors['missingCoordinate'].devices as string[]).join('、');
+      return `${names} 未维护经纬度，无法参与 5 公里距离校验。`;
+    }
+    if (errors['isolatedDevice']) {
+      const names = (errors['isolatedDevice'].devices as string[]).join('、');
+      return `${names} 与任意已选组网设备的距离都超过 5 公里，请调整设备样本。`;
+    }
+    return '';
+  }
+
   protected selectSampleDevice(item: Device): void {
     this.selectedSampleSncode = item.sncode;
     this.cdr.markForCheck();
@@ -163,6 +204,7 @@ export class GridEditComponent implements OnInit {
       .subscribe({
         next: (devices) => {
           this.devices = devices ?? [];
+          this.form.controls.sncodes.updateValueAndValidity({ emitEvent: false });
         },
         error: (err) => this.message.error(err?.msg || err?.message || '读取设备列表失败'),
       });
@@ -173,15 +215,27 @@ export class GridEditComponent implements OnInit {
     this.form.reset({
       name: grid.name ?? '',
       sncodes: this.splitSncodes(grid.sncodes),
-      resolution: grid.resolution ?? '1km',
-      min_device: grid.min_device ?? 3,
-      min_distance: grid.min_distance ?? 3,
+      resolution: this.normalizeResolution(grid.resolution),
+      minDevice: grid.minDevice ?? 3,
+      minDistance: grid.minDistance ?? 3,
       status: grid.status ?? 0,
     });
   }
 
   private trim(value?: string | null): string {
     return (value ?? '').trim();
+  }
+
+  private normalizeResolution(value?: string | number | null): number {
+    if (value === null || value === undefined || value === '') return 0.01;
+    if (typeof value === 'number') {
+      return this.resolutionOptions.some((item) => item.value === value) ? value : 0.01;
+    }
+    const normalized = this.trim(value).toLowerCase();
+    if (normalized === '1km' || normalized === '1公里') return 0.01;
+    if (normalized === '2km' || normalized === '2公里') return 0.02;
+    const numericValue = Number(normalized);
+    return this.resolutionOptions.some((item) => item.value === numericValue) ? numericValue : 0.01;
   }
 
   protected deviceLabel(device: Device): string {
@@ -194,6 +248,54 @@ export class GridEditComponent implements OnInit {
     return (
       item.lng !== null && item.lng !== undefined && item.lat !== null && item.lat !== undefined
     );
+  }
+
+  private deviceSampleValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const selectedSncodes = Array.isArray(control.value) ? control.value : [];
+      if (selectedSncodes.length < 3 || this.devices.length === 0) return null;
+
+      const selectedDevices = selectedSncodes
+        .map((sncode) => this.devices.find((item) => item.sncode === sncode))
+        .filter((item): item is Device => !!item);
+      const missingCoordinateDevices = selectedDevices
+        .filter((item) => !this.hasCoordinate(item))
+        .map((item) => item.alias || item.sncode);
+
+      if (missingCoordinateDevices.length > 0) {
+        return { missingCoordinate: { devices: missingCoordinateDevices } };
+      }
+
+      const isolatedDevices = selectedDevices.filter((source) =>
+        selectedDevices.every((target) => {
+          if (target.sncode === source.sncode) return true;
+          return this.distanceBetween(source, target) > 5;
+        }),
+      );
+
+      if (isolatedDevices.length > 0) {
+        return {
+          isolatedDevice: { devices: isolatedDevices.map((item) => item.alias || item.sncode) },
+        };
+      }
+
+      return null;
+    };
+  }
+
+  private distanceBetween(source: Device, target: Device): number {
+    const sourceLat = this.toRad(Number(source.lat));
+    const targetLat = this.toRad(Number(target.lat));
+    const deltaLat = this.toRad(Number(target.lat) - Number(source.lat));
+    const deltaLng = this.toRad(Number(target.lng) - Number(source.lng));
+    const a =
+      Math.sin(deltaLat / 2) ** 2 +
+      Math.cos(sourceLat) * Math.cos(targetLat) * Math.sin(deltaLng / 2) ** 2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  private toRad(value: number): number {
+    return (value * Math.PI) / 180;
   }
 
   private normalizeSncodes(value?: string[] | string | null): string {

@@ -109,7 +109,7 @@
               <em class="status" [class.status-off]="item.status !== 1">
                 {{ gridStatusLabel(item.status) }}
               </em>
-              <span>最少 {{ item.min_device || 0 }} 台</span>
+              <span>最少 {{ item.minDevice || 0 }} 台</span>
             </div>
           </a>
         } @empty {

@@ -6,7 +6,7 @@
         <i nz-icon nzType="arrow-left"></i>
         返回
       </button>
-      <button nz-button nzType="primary" [nzLoading]="saving" (click)="save()">
+      <button nz-button nzType="primary" [nzLoading]="saving" [disabled]="form.invalid" (click)="save()">
         <i nz-icon nzType="save"></i>
         保存
       </button>
@@ -15,7 +15,7 @@
 
   <nz-card class="form-card" [nzBordered]="false">
     <nz-spin [nzSpinning]="loading">
-      <form [formGroup]="form" class="grid-form" (ngSubmit)="save()">
+      <form #f [formGroup]="form" class="grid-form" (ngSubmit)="save()">
         <div class="form-intro">
           <i nz-icon nzType="border"></i>
           <div>
@@ -41,8 +41,12 @@
             </se>
             <se label="分辨率">
               <div class="control-stack">
-                <input nz-input formControlName="resolution" placeholder="例如 1km" />
-                <span>用于描述格网尺度，建议与实际中心点间距或业务输出精度保持一致。</span>
+                <nz-select formControlName="resolution" nzPlaceHolder="请选择格网分辨率">
+                  @for (item of resolutionOptions; track item.value) {
+                    <nz-option [nzValue]="item.value" [nzLabel]="item.label" />
+                  }
+                </nz-select>
+                <span>保存时按数值提交给后台，1 公里对应 0.01，2 公里对应 0.02。</span>
               </div>
             </se>
             <se label="格网状态" required>
@@ -63,7 +67,7 @@
             <span>维护参与该格网计算的设备号集合，设备坐标和预测数据会作为差分输入。</span>
           </div>
           <se-container [col]="2" labelWidth="118" size="compact">
-            <se label="设备号" [col]="1">
+            <se label="设备号" [col]="1" required [error]="sampleDeviceErrorMessage()">
               <div class="control-stack">
                 <nz-select
                   formControlName="sncodes"
@@ -79,8 +83,11 @@
                 </nz-select>
                 <span>
                   可多选设备管理中的设备号，保存后会作为格网差分计算的样本集合。
-                  未选择设备时，该格网不会匹配到有效心跳和预测数据。
+                  每台已选设备都需要至少有一台 5 公里内的组网设备。
                 </span>
+                @if (sampleDeviceErrorMessage(); as errorMessage) {
+                  <div class="sample-validation-tip">{{ errorMessage }}</div>
+                }
                 <div class="sample-map-panel">
                   <div class="sample-map-heading">
                     <div>
@@ -117,28 +124,20 @@
             <span>控制格网中心点计算时的最少样本数量和空间距离约束。</span>
           </div>
           <se-container [col]="2" labelWidth="118" size="compact">
-            <se label="最少设备" required error="请输入大于 0 的设备数">
+            <se label="最少设备" required error="请输入大于等于 3 的设备数">
               <div class="control-stack">
-                <nz-input-number formControlName="min_device" [nzMin]="1" [nzPrecision]="0" />
+                <nz-input-number formControlName="minDevice" [nzMin]="3" [nzPrecision]="0" />
                 <span>当有效设备数低于该值时，计算结果可信度不足，建议保持默认 3 台以上。</span>
               </div>
             </se>
-            <se label="最小距离 km" required error="请输入大于等于 0 的距离">
+            <se label="最小距离 km" required error="请输入大于等于 3 的距离">
               <div class="control-stack">
-                <nz-input-number formControlName="min_distance" [nzMin]="0" [nzPrecision]="2" />
+                <nz-input-number formControlName="minDistance" [nzMin]="3" [nzPrecision]="2" />
                 <span>用于过滤距离过近的样本点，降低单点密集分布对差分结果的影响。</span>
               </div>
             </se>
           </se-container>
         </section>
-
-        <div class="form-actions">
-          <button nz-button type="button" (click)="back()">取消</button>
-          <button nz-button nzType="primary" htmlType="submit" [nzLoading]="saving">
-            <i nz-icon nzType="save"></i>
-            保存
-          </button>
-        </div>
       </form>
     </nz-spin>
   </nz-card>

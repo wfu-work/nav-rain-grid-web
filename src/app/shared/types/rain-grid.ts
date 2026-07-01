@@ -31,9 +31,9 @@ export interface Grid {
   guid: string;
   name: string;
   sncodes?: string;
-  resolution?: string;
-  min_device?: number;
-  min_distance?: number;
+  resolution?: number | string;
+  minDevice?: number;
+  minDistance?: number;
   status: number;
   createTime?: number;
   updateTime?: number;
@@ -43,9 +43,9 @@ export interface SaveGridPayload {
   guid?: string;
   name: string;
   sncodes?: string;
-  resolution?: string;
-  min_device?: number;
-  min_distance?: number;
+  resolution?: number;
+  minDevice?: number;
+  minDistance?: number;
   status?: number;
 }
 
