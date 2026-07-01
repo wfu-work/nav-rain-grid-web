@@ -1,0 +1,147 @@
+<section class="account-page">
+  <div class="page-heading">
+    <title-label title="个人中心" description="查看当前登录账号信息，并维护控制台访问密码。" />
+    <button class="refresh-button" nz-button type="button" [nzLoading]="loading" (click)="load()">
+      <i nz-icon nzType="reload"></i>
+      刷新
+    </button>
+  </div>
+
+  <nz-spin [nzSpinning]="loading">
+    <section class="account-hero">
+      <div class="hero-main">
+        <div class="avatar-frame">
+          <img class="profile-avatar" [src]="avatarSrc()" [alt]="displayName()" />
+          <span class="avatar-status" [class.avatar-status-off]="!isEnabled()"></span>
+        </div>
+        <div class="hero-copy">
+          <span class="hero-kicker">Rain Grid Console</span>
+          <h2>{{ displayName() }}</h2>
+          <p>{{ profile?.username || '管理员账号' }}</p>
+          <div class="hero-badges">
+            <span class="status-chip" [class.status-chip-off]="!isEnabled()">
+              {{ statusText(profile?.status) }}
+            </span>
+            <span class="role-chip">{{ roleText() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="security-panel">
+        <div class="security-icon">
+          <i nz-icon nzType="safety-certificate"></i>
+        </div>
+        <div>
+          <span class="panel-kicker">Security Check</span>
+          <strong>密码修改已接入加密校验</strong>
+          <p>提交前会加密当前密码与新密码；保存成功后，下次登录请使用新密码。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="account-grid">
+      <nz-card class="profile-card" [nzBordered]="false">
+        <div class="section-heading">
+          <div>
+            <h2>账号档案</h2>
+            <p>用于确认当前 Token 绑定的管理员身份和最近资料变更时间。</p>
+          </div>
+        </div>
+
+        <div class="profile-summary">
+          <article>
+            <span>账号状态</span>
+            <strong [class.text-danger]="!isEnabled()">{{ statusText(profile?.status) }}</strong>
+          </article>
+          <article>
+            <span>角色权限</span>
+            <strong>{{ roleText() }}</strong>
+          </article>
+        </div>
+
+        <div class="profile-details">
+          <div class="detail-row">
+            <span>用户标识</span>
+            <strong>{{ profile?.guid || '-' }}</strong>
+          </div>
+          <div class="detail-row">
+            <span>邮箱</span>
+            <strong>{{ profile?.email || '-' }}</strong>
+          </div>
+          <div class="detail-row">
+            <span>手机号</span>
+            <strong>{{ profile?.phone || '-' }}</strong>
+          </div>
+          <div class="detail-row">
+            <span>创建时间</span>
+            <strong>{{ formatTime(profile?.createTime) }}</strong>
+          </div>
+          <div class="detail-row">
+            <span>更新时间</span>
+            <strong>{{ formatTime(profile?.updateTime) }}</strong>
+          </div>
+        </div>
+      </nz-card>
+
+      <nz-card class="password-card" [nzBordered]="false">
+        <div class="section-heading">
+          <div>
+            <h2>修改密码</h2>
+            <p>建议使用 8 位以上密码，并混合大小写字母、数字与符号。</p>
+          </div>
+          <span class="mode-chip">Encrypted</span>
+        </div>
+
+        <form nz-form [formGroup]="form" (ngSubmit)="savePassword()">
+          <se-container col="1" nzLayout="vertical">
+            <se label="当前密码" required error="请输入当前密码">
+              <app-password-input
+                formControlName="oldPassword"
+                size="default"
+                placeholder="输入当前登录密码"
+                autocomplete="current-password"
+              />
+              <div class="field-note">用于验证当前管理员身份，服务端会校验旧密码是否正确。</div>
+            </se>
+
+            <se label="新密码" required error="新密码至少 8 位">
+              <app-password-input
+                formControlName="newPassword"
+                size="default"
+                placeholder="至少 8 位"
+                autocomplete="new-password"
+              />
+              <div
+                class="password-strength"
+                [class.strength-weak]="isWeakPassword()"
+                [class.strength-medium]="isMediumPassword()"
+                [class.strength-strong]="isStrongPassword()"
+              >
+                <span>强度：{{ passwordStrengthText() }}</span>
+                <i></i>
+              </div>
+            </se>
+
+            <se label="确认新密码" required error="请再次输入新密码">
+              <app-password-input
+                formControlName="confirmPassword"
+                size="default"
+                placeholder="再次输入新密码"
+                autocomplete="new-password"
+              />
+              <div class="field-note">两次输入一致后再保存，避免把账号锁在不可预期的密码上。</div>
+            </se>
+          </se-container>
+
+          <div class="password-actions">
+            <button nz-button nzType="primary" type="submit" [nzLoading]="saving">
+              <i nz-icon nzType="save"></i>
+              保存密码
+            </button>
+            <span>保存后当前会话仍可继续使用；下次登录需要输入新密码。</span>
+          </div>
+        </form>
+      </nz-card>
+    </div>
+  </nz-spin>
+</section>

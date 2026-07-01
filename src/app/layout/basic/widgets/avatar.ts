@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
 import { SettingsService, User } from '@delon/theme';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -26,6 +26,11 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
     </div>
     <nz-dropdown-menu #userMenu="nzDropdownMenu">
       <div nz-menu class="width-sm">
+         <div nz-menu-item routerLink="/system/account">
+          <i nz-icon nzType="user" class="mr-sm"></i>
+          个人中心
+        </div>
+        <li nz-menu-divider></li>
         <div nz-menu-item (click)="logout()">
           <i nz-icon nzType="logout" class="mr-sm"></i>
           退出登录
@@ -35,7 +40,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [NzDropdownModule, NzMenuModule, NzIconModule, NzAvatarModule],
+  imports: [NzDropdownModule, NzMenuModule, NzIconModule, NzAvatarModule, RouterLink],
 })
 export class AvatarComponent {
   protected readonly user = inject(SettingsService).user as User & { username?: string };

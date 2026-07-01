@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { SystemAccountComponent } from './account/system-account.component';
 import { OperationMonitorComponent } from './monitor/operation-monitor.component';
 import { MqttMonitorComponent } from './mqtt/mqtt-monitor.component';
 import { SystemSettingsComponent } from './settings/system-settings.component';
@@ -20,5 +21,10 @@ export const routes: Routes = [
     path: 'settings',
     component: SystemSettingsComponent,
     data: { title: '系统设置' },
+  },
+  {
+    path: 'account',
+    component: SystemAccountComponent,
+    data: { title: '个人中心' },
   },
 ];
