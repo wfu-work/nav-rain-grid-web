@@ -116,6 +116,44 @@ type PanelTrendType = 'up' | 'down' | 'neutral';
         letter-spacing: 0;
       }
 
+      :host-context(.nm-theme-dark) .panel {
+        border-color: rgb(148 163 184 / 22%);
+        background:
+          radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 10%), transparent 38%),
+          linear-gradient(180deg, rgb(24 37 58 / 96%), rgb(13 24 40 / 96%));
+        box-shadow:
+          0 18px 42px rgb(0 0 0 / 30%),
+          inset 0 1px 0 rgb(255 255 255 / 6%);
+      }
+
+      :host-context(.nm-theme-dark) .panel-icon {
+        color: var(--nm-primary-hover);
+        background: rgb(var(--nm-primary-rgb) / 18%);
+      }
+
+      :host-context(.nm-theme-dark) .panel-trend {
+        color: #bfdbfe;
+        background: rgb(var(--nm-primary-rgb) / 22%);
+      }
+
+      :host-context(.nm-theme-dark) .panel-trend-down {
+        color: #fca5a5;
+        background: rgb(127 29 29 / 26%);
+      }
+
+      :host-context(.nm-theme-dark) .panel-trend-neutral {
+        color: rgb(226 232 240 / 82%);
+        background: rgb(30 41 59 / 78%);
+      }
+
+      :host-context(.nm-theme-dark) .panel-title {
+        color: rgb(203 213 225 / 74%);
+      }
+
+      :host-context(.nm-theme-dark) .panel-value {
+        color: rgb(248 250 252 / 96%);
+      }
+
       @media (max-width: 767px) {
         .panel {
           padding: 22px 22px 20px;

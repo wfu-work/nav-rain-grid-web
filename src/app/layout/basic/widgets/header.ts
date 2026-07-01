@@ -14,8 +14,8 @@ import { LayoutDefaultModule } from '@delon/theme/layout-default';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { filter } from 'rxjs';
 
+import { AppearanceSettingsComponent } from './appearance';
 import { AvatarComponent } from './avatar';
-import { ThemeColorComponent } from './theme-color';
 
 @Component({
   selector: 'basic-header',
@@ -35,7 +35,7 @@ import { ThemeColorComponent } from './theme-color';
         <span class="font-weight-bold text-xl title">{{ pageTitle }}</span>
       </div>
       <div class="header-actions">
-        <theme-color />
+        <app-appearance />
         <header-avatar />
       </div>
     </div>
@@ -77,6 +77,39 @@ import { ThemeColorComponent } from './theme-color';
 
       .header-container-collapsed {
         left: calc(var(--basic-sider-collapsed-width, 80px) + var(--basic-layout-gap, 14px) * 2);
+      }
+
+      :host-context(.nm-sider-embedded) .header-container,
+      :host-context(.nm-sider-sidebar) .header-container {
+        right: 0;
+        border-radius: 0 0 0 22px;
+      }
+
+      :host-context(.nm-theme-dark) .header-container-scrolled {
+        border-color: rgb(148 163 184 / 14%);
+        background: rgb(10 17 30 / 78%);
+        box-shadow:
+          0 14px 36px rgb(0 0 0 / 28%),
+          inset 0 1px 0 rgb(255 255 255 / 5%);
+      }
+
+      :host-context(.nm-theme-dark) .header-actions {
+        color: rgb(255 255 255 / 70%);
+      }
+
+      :host-context(.nm-theme-dark) .trigger {
+        border-color: rgb(var(--nm-primary-rgb) / 20%);
+        color: rgb(226 232 240 / 90%);
+        background: rgb(var(--nm-primary-rgb) / 14%);
+      }
+
+      :host-context(.nm-theme-dark) .trigger:hover {
+        color: #fff;
+        background: rgb(var(--nm-primary-rgb) / 24%);
+      }
+
+      :host-context(.nm-theme-dark) .title {
+        color: rgb(241 245 249 / 92%);
       }
 
       .header-left {
@@ -169,7 +202,7 @@ import { ThemeColorComponent } from './theme-color';
     `,
   ],
   standalone: true,
-  imports: [AvatarComponent, LayoutDefaultModule, NzIconModule, ThemeColorComponent],
+  imports: [AppearanceSettingsComponent, AvatarComponent, LayoutDefaultModule, NzIconModule],
 })
 export class BasicHeaderComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);

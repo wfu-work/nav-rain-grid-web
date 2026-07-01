@@ -101,3 +101,91 @@
     }
   }
 }
+
+:host-context(.nm-sider-embedded) ::ng-deep {
+  --basic-layout-gap: 0px;
+  --basic-header-top: 0px;
+  --basic-header-offset: calc(var(--basic-header-height) + 22px);
+
+  nz-sider {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding-top: 22px;
+    border-width: 0 1px 0 0;
+    border-color: rgb(var(--nm-primary-rgb) / 10%);
+    border-radius: 0;
+    box-shadow: inset -1px 0 0 rgb(255 255 255 / 70%);
+  }
+
+  .content {
+    margin-left: 220px;
+  }
+
+  .content-close {
+    margin-left: 80px;
+  }
+}
+
+:host-context(.nm-sider-sidebar) ::ng-deep {
+  --basic-layout-gap: 0px;
+  --basic-header-top: 0px;
+  --basic-header-offset: calc(var(--basic-header-height) + 22px);
+
+  nz-sider {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 22px 12px;
+    border: 0;
+    border-radius: 0;
+    background:
+      radial-gradient(circle at 50% 10%, rgb(var(--nm-primary-rgb) / 18%), transparent 34%),
+      linear-gradient(180deg, #13233a 0%, #0f172a 100%);
+    box-shadow: 12px 0 32px rgb(15 23 42 / 14%);
+  }
+
+  .content {
+    margin-left: 220px;
+  }
+
+  .content-close {
+    margin-left: 80px;
+  }
+}
+
+:host-context(.nm-theme-dark) ::ng-deep {
+  background:
+    radial-gradient(circle at 14% 18%, rgb(var(--nm-primary-rgb) / 22%), transparent 30%),
+    radial-gradient(circle at 82% 8%, rgb(20 184 166 / 9%), transparent 28%),
+    radial-gradient(circle at 50% 100%, rgb(15 23 42 / 92%), transparent 34%),
+    linear-gradient(116deg, #080f1d 0%, #0d1625 48%, #060b14 100%);
+
+  nz-sider {
+    border-color: rgb(148 163 184 / 14%);
+    background:
+      radial-gradient(circle at 40% 0%, rgb(var(--nm-primary-rgb) / 14%), transparent 34%),
+      linear-gradient(180deg, rgb(19 30 48 / 96%) 0%, rgb(10 17 30 / 98%) 100%);
+    box-shadow:
+      0 22px 52px rgb(0 0 0 / 32%),
+      inset 0 1px 0 rgb(255 255 255 / 5%);
+  }
+
+  nz-header,
+  nz-footer {
+    background: transparent;
+  }
+
+  .inner-content-no {
+    color: rgb(255 255 255 / 88%);
+  }
+}
+
+:host-context(.nm-theme-dark.nm-sider-sidebar) ::ng-deep {
+  nz-sider {
+    background:
+      radial-gradient(circle at 50% 6%, rgb(var(--nm-primary-rgb) / 18%), transparent 34%),
+      linear-gradient(180deg, #101928 0%, #070d18 100%);
+    box-shadow: 12px 0 34px rgb(0 0 0 / 28%);
+  }
+}

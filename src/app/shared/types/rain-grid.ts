@@ -55,7 +55,10 @@ export interface Predict {
   time: number;
   sncode: string;
   predictRain: number;
+  predictNewRain?: number;
   predictRainLevel: number;
+  predictNewRainLevel?: number;
+  realRain?: number;
   type: number;
   createTime?: number;
   updateTime?: number;
@@ -63,6 +66,7 @@ export interface Predict {
 
 export interface PredictGroup {
   baseTime: number;
+  realRain?: number;
   predictList: Predict[];
 }
 

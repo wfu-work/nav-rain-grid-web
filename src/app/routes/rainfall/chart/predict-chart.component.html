@@ -1,0 +1,81 @@
+<section class="chart-page">
+  <div class="page-heading">
+    <title-label
+      title="降雨图表"
+      description="按设备和时间范围分析 1、12、24 小时预测降雨量与真实降雨量变化。"
+    />
+    <div class="page-actions">
+      <button nz-button (click)="getData()" [nzLoading]="loading">
+        <i nz-icon nzType="reload"></i>
+        刷新
+      </button>
+    </div>
+  </div>
+
+  <nz-card class="chart-card" [nzBordered]="false">
+    <div class="filter-panel">
+      <div class="filter-heading">
+        <div>
+          <strong>图表筛选</strong>
+          <span>选择设备与基准时间范围，图表会聚合同一基准时间下的 1、12、24 小时预测。</span>
+        </div>
+        <span class="result-chip">{{ pointCount() }} 个基准点</span>
+      </div>
+
+      <div class="query-bar">
+        <nz-select
+          class="device-select"
+          [(ngModel)]="q.sncode"
+          [nzLoading]="deviceLoading"
+          [nzDisabled]="deviceLoading || devices.length === 0"
+          nzPlaceHolder="请选择设备"
+        >
+          @for (device of devices; track device.guid || device.sncode) {
+            <nz-option
+              [nzValue]="device.sncode"
+              [nzLabel]="deviceOptionLabel(device)"
+            ></nz-option>
+          }
+        </nz-select>
+
+        <app-date-picker class="time-range" [(date)]="q.dateRange" />
+
+        <div class="filter-actions">
+          <button nz-button nzType="primary" (click)="getData()" [nzLoading]="loading">
+            <i nz-icon nzType="bar-chart"></i>
+            生成图表
+          </button>
+          <button nz-button (click)="resetQuery()">重置</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-strip">
+      <article>
+        <span>当前设备</span>
+        <strong>{{ q.sncode || '-' }}</strong>
+      </article>
+      <article>
+        <span>最大雨量</span>
+        <strong>{{ maxRainText() }} mm</strong>
+      </article>
+      <article>
+        <span>最新基准时间</span>
+        <strong>{{ latestBaseTimeText() }}</strong>
+      </article>
+    </div>
+
+    <nz-spin [nzSpinning]="loading">
+      <div class="chart-shell">
+        <div #chartRef class="chart-canvas"></div>
+        @if (isEmpty && !loading) {
+          <div class="chart-empty">
+            <i nz-icon nzType="cloud"></i>
+            <strong>暂无图表数据</strong>
+            <span>请调整设备或时间范围后重新生成图表。</span>
+          </div>
+        }
+      </div>
+    </nz-spin>
+  </nz-card>
+</section>

@@ -14,8 +14,7 @@
           <img class="profile-avatar" [src]="avatarSrc()" [alt]="displayName()" />
           <span class="avatar-status" [class.avatar-status-off]="!isEnabled()"></span>
         </div>
-        <div class="hero-copy">
-          <span class="hero-kicker">Rain Grid Console</span>
+        <div class="hero-copy">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
           <h2>{{ displayName() }}</h2>
           <p>{{ profile?.username || '管理员账号' }}</p>
           <div class="hero-badges">
@@ -32,7 +31,6 @@
           <i nz-icon nzType="safety-certificate"></i>
         </div>
         <div>
-          <span class="panel-kicker">Security Check</span>
           <strong>密码修改已接入加密校验</strong>
           <p>提交前会加密当前密码与新密码；保存成功后，下次登录请使用新密码。</p>
         </div>

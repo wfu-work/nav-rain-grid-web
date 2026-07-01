@@ -244,6 +244,87 @@
   background: #f8fafc;
 }
 
+:host-context(.nm-theme-dark) {
+  .summary-card,
+  .device-row {
+    border-color: rgb(148 163 184 / 22%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 8%), transparent 38%),
+      rgb(13 24 40 / 84%);
+  }
+
+  .summary-card.primary {
+    border-color: rgb(var(--nm-primary-rgb) / 34%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 16%), transparent 40%),
+      rgb(13 24 40 / 88%);
+  }
+
+  .summary-card.success {
+    border-color: rgb(34 197 94 / 30%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(34 197 94 / 12%), transparent 40%),
+      rgb(13 24 40 / 88%);
+  }
+
+  .summary-card.warning {
+    border-color: rgb(245 158 11 / 34%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(245 158 11 / 14%), transparent 40%),
+      rgb(13 24 40 / 88%);
+  }
+
+  .summary-card span,
+  .summary-card em,
+  .card-heading span,
+  .distance-toggle span,
+  .device-row span,
+  .row-side span {
+    color: rgb(226 232 240 / 74%);
+  }
+
+  .summary-card strong,
+  .card-heading h2,
+  .device-row strong {
+    color: rgb(248 250 252 / 96%);
+  }
+
+  .result-chip {
+    color: #93c5fd !important;
+    background: rgb(var(--nm-primary-rgb) / 22%);
+  }
+
+  .device-row:hover {
+    border-color: rgb(var(--nm-primary-rgb) / 42%);
+    background: rgb(var(--nm-primary-rgb) / 14%);
+  }
+
+  .device-row.selected {
+    border-color: rgb(var(--nm-primary-rgb) / 54%);
+    background:
+      linear-gradient(90deg, rgb(var(--nm-primary-rgb) / 20%), rgb(var(--nm-primary-rgb) / 10%));
+    box-shadow:
+      inset 3px 0 0 var(--nm-primary-hover),
+      0 12px 24px rgb(0 0 0 / 18%);
+  }
+
+  .row-side em {
+    color: #86efac;
+    background: rgb(22 101 52 / 24%);
+  }
+
+  .row-side em.offline {
+    color: #fde68a;
+    background: rgb(146 64 14 / 26%);
+  }
+
+  .empty-state {
+    border-color: rgb(148 163 184 / 24%);
+    color: rgb(226 232 240 / 74%);
+    background: rgb(15 27 46 / 74%);
+  }
+}
+
 @media (max-width: 1200px) {
   .summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

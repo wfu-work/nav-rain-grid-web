@@ -23,15 +23,20 @@
       </div>
 
       <div class="query-bar">
-        <nz-input-wrapper class="search-input">
-          <nz-icon nzInputPrefix nzType="search" />
-          <input
-            nz-input
-            [(ngModel)]="q.sncode"
-            placeholder="搜索设备号"
-            (keydown.enter)="search()"
-          />
-        </nz-input-wrapper>
+        <nz-select
+          class="device-select"
+          [(ngModel)]="q.sncode"
+          [nzLoading]="deviceLoading"
+          [nzDisabled]="deviceLoading || devices.length === 0"
+          nzPlaceHolder="请选择设备"
+        >
+          @for (device of devices; track device.guid || device.sncode) {
+            <nz-option
+              [nzValue]="device.sncode"
+              [nzLabel]="deviceOptionLabel(device)"
+            ></nz-option>
+          }
+        </nz-select>
         <div class="filter-controls">
           <app-date-picker class="time-range" [(date)]="q.dateRange" />
         </div>
@@ -53,46 +58,23 @@
       [ps]="q.size"
       [total]="total"
       [page]="{ front: false, showSize: true, pageSizes: [10, 20, 50], showQuickJumper: true }"
+      [expand]="expand"
+      [expandRowByClick]="true"
       (change)="tableChange($event)"
     >
       <ng-template st-row="baseTimeRender" let-item>
-        <div class="strong">{{ formatTime(item.baseTime) }}</div>
-        <div class="muted mono">{{ item.baseTime }}</div>
-      </ng-template>
-
-      <ng-template st-row="devicesRender" let-item>
-        <div class="sncode-list">
-          @for (sncode of firstSncodes(item); track sncode) {
-            <span class="sncode-chip">{{ sncode }}</span>
-          }
-          @if (sncodes(item).length > 3) {
-            <span class="muted">+{{ sncodes(item).length - 3 }}</span>
-          }
+        <div class="base-time-cell">
+          <strong>{{ formatTime(item.baseTime) }}</strong>
+          <span>{{ item.baseTime }}</span>
         </div>
       </ng-template>
 
-      <ng-template st-row="rainRender" let-item>
-        <div class="rain-list">
-          @for (predict of horizonItems(item); track predict.guid) {
-            <span class="rain-chip">
-              <strong>{{ typeLabel(predict.type) }}</strong>
-              <em
-                >{{ rainText(predict.predictRain) }} ·
-                {{ levelLabel(predict.predictRainLevel) }}</em
-              >
-            </span>
-          } @empty {
-            <span class="muted">暂无 1、12、24 小时预测值</span>
-          }
-        </div>
+      <ng-template st-row="rainSummaryRender" let-item>
+        <span class="expand-hint">{{ expandHint(item) }}</span>
       </ng-template>
 
-      <ng-template st-row="countRender" let-item>
-        <span class="pill">{{ item.predictList.length }} 条</span>
-      </ng-template>
-
-      <ng-template st-row="updateTimeRender" let-item>
-        {{ formatTime(latestUpdate(item)) }}
+      <ng-template st-row="realRainRender" let-item>
+        <span class="real-rain-value">{{ realRainText(groupRealRain(item)) }}</span>
       </ng-template>
 
       <ng-template st-row="actionsRender" let-item>
@@ -102,11 +84,46 @@
           class="action-button"
           aria-label="删除"
           nzDanger
-          (click)="remove(item)"
+          (click)="$event.stopPropagation(); remove(item)"
         >
           <i nz-icon nzType="delete"></i>
           <span>删除</span>
         </button>
+      </ng-template>
+
+      <ng-template #expand let-item>
+        <div class="predict-expand">
+          <div class="expand-header">
+            <div>
+              <strong>{{ q.sncode || firstSncodes(item)[0] || '设备' }}</strong>
+              <span>基准时间 {{ formatTime(item.baseTime) }} 的逐时预测明细</span>
+            </div>
+            <span class="pill">{{ item.predictList.length }} 条</span>
+          </div>
+
+          <div class="detail-table">
+            <div class="detail-row detail-head">
+              <span>北京时间</span>
+              <span>预测降雨量 <em>(mm)</em></span>
+              <span>预测降雨等级</span>
+            </div>
+            @for (predict of sortedPredictList(item); track predict.guid) {
+              <div class="detail-row">
+                <strong>{{ formatTime(predict.time) }}</strong>
+                <span class="rain-number">{{ rainText(predictRainValue(predict)) }}</span>
+                <span class="level-cell">
+                  @if (shouldShowPredictLevel(item, predict)) {
+                    <span [class]="'level-tag ' + levelClass(predictLevelValue(predict))">
+                      {{ levelLabel(predictLevelValue(predict)) }}
+                    </span>
+                  }
+                </span>
+              </div>
+            } @empty {
+              <div class="detail-empty">暂无预测明细</div>
+            }
+          </div>
+        </div>
       </ng-template>
     </st>
   </nz-card>

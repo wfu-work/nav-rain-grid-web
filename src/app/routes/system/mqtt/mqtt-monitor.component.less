@@ -333,6 +333,138 @@
   background: #f8fafc;
 }
 
+:host-context(.nm-theme-dark) {
+  .mqtt-page {
+    color: rgb(248 250 252 / 94%);
+  }
+
+  .refresh-chip {
+    border: 1px solid rgb(148 163 184 / 20%) !important;
+    color: rgb(226 232 240 / 76%) !important;
+    background: rgb(15 23 42 / 62%) !important;
+  }
+
+  .intro-card,
+  .metric-card,
+  .monitor-card,
+  .info-grid div,
+  .message-panel div,
+  .description-list div {
+    border-color: rgb(148 163 184 / 22%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 8%), transparent 40%),
+      linear-gradient(180deg, rgb(18 31 50 / 94%), rgb(11 22 38 / 94%)) !important;
+    box-shadow:
+      0 18px 42px rgb(0 0 0 / 24%),
+      inset 0 1px 0 rgb(255 255 255 / 5%) !important;
+  }
+
+  .intro-card i {
+    color: #93c5fd !important;
+    background: rgb(var(--nm-primary-rgb) / 18%) !important;
+  }
+
+  .metric-card.primary,
+  .metric-primary {
+    border-color: rgb(var(--nm-primary-rgb) / 34%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 18%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .metric-success,
+  .service-success,
+  .status-card {
+    border-color: rgb(34 197 94 / 30%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(34 197 94 / 12%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .metric-warning,
+  .service-warning {
+    border-color: rgb(245 158 11 / 34%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(245 158 11 / 14%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .metric-danger,
+  .service-danger {
+    border-color: rgb(248 113 113 / 34%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(248 113 113 / 13%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .metric-idle,
+  .service-idle {
+    border-color: rgb(148 163 184 / 22%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 8%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .card-heading h2,
+  .intro-card strong,
+  .metric-card strong,
+  .info-grid strong,
+  .message-panel strong,
+  .description-list strong {
+    color: rgb(248 250 252 / 96%) !important;
+  }
+
+  .card-heading span,
+  .intro-card span,
+  .metric-card span,
+  .metric-card em,
+  .info-grid span,
+  .message-panel span,
+  .description-list span {
+    color: rgb(226 232 240 / 74%) !important;
+  }
+
+  .status-chip {
+    border: 1px solid rgb(148 163 184 / 20%) !important;
+    background: rgb(15 23 42 / 62%) !important;
+  }
+
+  .status-success {
+    border-color: rgb(34 197 94 / 30%) !important;
+    color: #86efac !important;
+    background: rgb(22 101 52 / 24%) !important;
+  }
+
+  .status-warning {
+    border-color: rgb(245 158 11 / 34%) !important;
+    color: #fde68a !important;
+    background: rgb(146 64 14 / 28%) !important;
+  }
+
+  .status-danger {
+    border-color: rgb(248 113 113 / 34%) !important;
+    color: #fca5a5 !important;
+    background: rgb(127 29 29 / 28%) !important;
+  }
+
+  .status-idle {
+    color: rgb(226 232 240 / 72%) !important;
+    background: rgb(30 41 59 / 72%) !important;
+  }
+
+  .warning-note {
+    border-color: rgb(245 158 11 / 34%) !important;
+    color: #fde68a !important;
+    background: rgb(146 64 14 / 22%) !important;
+  }
+
+  .empty-state {
+    border-color: rgb(148 163 184 / 24%) !important;
+    color: rgb(226 232 240 / 74%) !important;
+    background: rgb(15 27 46 / 72%) !important;
+  }
+}
+
 @media (max-width: 1200px) {
   .intro-grid,
   .metric-grid,

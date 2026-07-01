@@ -210,6 +210,66 @@
   font-weight: 600;
 }
 
+:host-context(.nm-theme-dark) {
+  .filter-panel {
+    border-radius: 12px;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 8%), transparent 34%),
+      rgb(8 17 31 / 28%);
+  }
+
+  .filter-heading strong,
+  .strong {
+    color: rgb(248 250 252 / 96%);
+  }
+
+  .filter-heading span,
+  .muted,
+  .capability-line {
+    color: rgb(226 232 240 / 72%);
+  }
+
+  .result-chip,
+  .pill {
+    color: #93c5fd !important;
+    background: rgb(var(--nm-primary-rgb) / 22%);
+  }
+
+  .status,
+  .capability-on {
+    color: #86efac;
+    background: rgb(22 101 52 / 24%);
+  }
+
+  .status-off {
+    color: #fde68a;
+    background: rgb(146 64 14 / 26%);
+  }
+
+  .capability {
+    color: rgb(226 232 240 / 72%);
+    background: rgb(30 41 59 / 72%);
+  }
+
+  .action-button {
+    color: #60a5fa;
+  }
+
+  .action-button[nzDanger] {
+    color: #f87171;
+  }
+
+  .list-card ::ng-deep {
+    .ant-table-tbody > tr > td {
+      color: rgb(248 250 252 / 90%) !important;
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background: rgb(var(--nm-primary-rgb) / 12%) !important;
+    }
+  }
+}
+
 @media (max-width: 900px) {
   .page-heading,
   .filter-heading {

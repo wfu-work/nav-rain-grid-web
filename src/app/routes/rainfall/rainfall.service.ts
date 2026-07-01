@@ -26,6 +26,12 @@ export class RainfallService {
     });
   }
 
+  predictQuery(query: PredictQuery = {}): Observable<PredictGroup[]> {
+    return this.http.get<PredictGroup[]>('/predict/query', {
+      params: this.toParams(query),
+    });
+  }
+
   deletePredict(params: PredictDeleteParams): Observable<boolean> {
     return this.http.delete<boolean>('/predict/params', {
       params: this.toParams(params),

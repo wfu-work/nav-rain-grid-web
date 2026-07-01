@@ -51,6 +51,17 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  .ant-table-expanded-row > td {
+    padding: 0 0 0 48px !important;
+    background: #fbfcff;
+  }
+
+  .ant-table-row-expand-icon {
+    border-color: #d7dfef;
+    border-radius: 4px;
+    color: #1f2a3d;
+  }
 }
 
 .filter-panel {
@@ -104,7 +115,7 @@
   min-width: 0;
 }
 
-.search-input {
+.device-select {
   width: 100%;
 }
 
@@ -147,8 +158,7 @@
 }
 
 .pill,
-.sncode-chip,
-.rain-chip {
+.level-tag {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -163,44 +173,297 @@
   background: rgb(var(--nm-primary-rgb) / 10%);
 }
 
-.sncode-chip {
-  overflow: hidden;
-  max-width: 92px;
-  color: #334155;
-  text-overflow: ellipsis;
-  background: #f1f5f9;
-}
-
-.rain-list {
-  gap: 8px;
-}
-
-.rain-chip {
-  gap: 6px;
-  max-width: 168px;
-  color: #168a46;
-  background: #e8f8ef;
-}
-
-.rain-chip strong,
-.rain-chip em {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rain-chip em {
-  font-weight: 700;
-  font-style: normal;
-  color: #567064;
-}
-
 .action-button {
   display: inline-flex;
   gap: 6px;
   align-items: center;
   padding: 0;
   font-weight: 800;
+}
+
+.base-time-cell {
+  display: grid;
+  gap: 6px;
+}
+
+.base-time-cell strong {
+  color: #1f2a3d;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.base-time-cell span {
+  color: #7a8699;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.expand-hint {
+  color: #1f2a3d;
+  font-weight: 800;
+}
+
+.real-rain-value {
+  color: #1f2a3d;
+  font-weight: 750;
+}
+
+.predict-expand {
+  padding: 16px 18px 18px;
+  border-left: 1px solid #e7edf7;
+  background: linear-gradient(180deg, #fbfcff 0%, #fff 100%);
+}
+
+.expand-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.expand-header div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.expand-header strong {
+  color: #1f2a3d;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.expand-header span {
+  color: #6b778c;
+  font-size: 12px;
+}
+
+.detail-table {
+  overflow: hidden;
+  border: 1px solid #e7edf7;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(160px, 0.78fr) minmax(180px, 0.9fr);
+  min-width: 620px;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.detail-row:last-child {
+  border-bottom: 0;
+}
+
+.detail-row > * {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 46px;
+  padding: 8px 12px;
+  border-right: 1px solid #edf1f7;
+  color: #1f2a3d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.detail-row > *:last-child {
+  border-right: 0;
+}
+
+.detail-head {
+  background: #f7f9ff;
+}
+
+.detail-head span {
+  color: #1f2a3d;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.detail-head em {
+  margin-left: 4px;
+  color: #9aa4b2;
+  font-style: normal;
+}
+
+.rain-number {
+  color: #16704a;
+}
+
+.level-cell {
+  justify-content: flex-start;
+}
+
+.level-tag {
+  width: fit-content;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+
+.level-none {
+  border-color: #9be17f;
+  color: #35a100;
+  background: #f1ffe9;
+}
+
+.level-light {
+  border-color: #91d5ff;
+  color: #1677c8;
+  background: #eef8ff;
+}
+
+.level-medium {
+  border-color: #ffe08a;
+  color: #9a6700;
+  background: #fff8df;
+}
+
+.level-heavy {
+  border-color: #87e8de;
+  color: #00796b;
+  background: #e6fffb;
+}
+
+.level-storm {
+  border-color: #ffa39e;
+  color: #cf1322;
+  background: #fff1f0;
+}
+
+.level-unknown {
+  border-color: #d9d9d9;
+  color: #667085;
+  background: #f5f5f5;
+}
+
+.detail-empty {
+  padding: 22px;
+  color: #7a8699;
+  font-size: 13px;
+  text-align: center;
+}
+
+:host-context(.nm-theme-dark) {
+  .filter-heading strong,
+  .base-time-cell strong,
+  .expand-hint,
+  .real-rain-value,
+  .expand-header strong,
+  .detail-row > *,
+  .detail-head span {
+    color: rgb(248 250 252 / 94%);
+  }
+
+  .filter-heading span,
+  .base-time-cell span,
+  .expand-header span,
+  .detail-head em,
+  .detail-empty {
+    color: rgb(226 232 240 / 72%);
+  }
+
+  .filter-panel {
+    border-radius: 12px;
+    background: rgb(8 17 31 / 28%);
+  }
+
+  .result-chip,
+  .pill {
+    color: #93c5fd !important;
+    background: rgb(var(--nm-primary-rgb) / 20%);
+  }
+
+  .rain-number {
+    color: #86efac;
+  }
+
+  .predict-expand {
+    border-left-color: rgb(96 165 250 / 24%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 10%), transparent 30%),
+      linear-gradient(180deg, rgb(15 27 46 / 98%), rgb(10 19 33 / 98%));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 5%);
+  }
+
+  .detail-table {
+    border-color: rgb(148 163 184 / 22%);
+    background: rgb(11 20 34 / 94%);
+    box-shadow:
+      0 12px 28px rgb(0 0 0 / 22%),
+      inset 0 1px 0 rgb(255 255 255 / 5%);
+  }
+
+  .detail-row {
+    border-bottom-color: rgb(148 163 184 / 18%);
+    background: transparent !important;
+  }
+
+  .detail-row > * {
+    border-right-color: rgb(148 163 184 / 18%);
+    background: transparent !important;
+  }
+
+  .detail-head {
+    background: rgb(17 30 50 / 92%) !important;
+  }
+
+  .level-none {
+    border-color: rgb(134 239 172 / 46%);
+    color: #86efac;
+    background: rgb(22 101 52 / 22%);
+  }
+
+  .level-light {
+    border-color: rgb(125 211 252 / 48%);
+    color: #7dd3fc;
+    background: rgb(14 116 144 / 22%);
+  }
+
+  .level-medium {
+    border-color: rgb(252 211 77 / 52%);
+    color: #fde68a;
+    background: rgb(146 64 14 / 24%);
+  }
+
+  .level-heavy {
+    border-color: rgb(94 234 212 / 48%);
+    color: #5eead4;
+    background: rgb(15 118 110 / 24%);
+  }
+
+  .level-storm {
+    border-color: rgb(252 165 165 / 52%);
+    color: #fca5a5;
+    background: rgb(127 29 29 / 24%);
+  }
+
+  .level-unknown {
+    border-color: rgb(148 163 184 / 28%);
+    color: rgb(226 232 240 / 72%);
+    background: rgb(30 41 59 / 54%);
+  }
+
+  .list-card ::ng-deep {
+    .ant-table-expanded-row > td {
+      background: rgb(9 18 33 / 92%) !important;
+    }
+
+    .ant-table-row-expand-icon {
+      border-color: rgb(148 163 184 / 34%);
+      color: rgb(248 250 252 / 90%);
+      background: rgb(17 30 50 / 90%);
+    }
+
+    .ant-table-row-expand-icon:hover {
+      border-color: rgb(var(--nm-primary-rgb) / 58%);
+      color: #fff;
+    }
+  }
 }
 
 @media (max-width: 900px) {
@@ -220,5 +483,13 @@
 
   .filter-actions {
     justify-content: flex-start;
+  }
+
+  .list-card ::ng-deep .ant-table-expanded-row > td {
+    padding-left: 0 !important;
+  }
+
+  .predict-expand {
+    overflow-x: auto;
   }
 }

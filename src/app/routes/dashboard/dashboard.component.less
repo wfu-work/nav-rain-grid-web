@@ -434,6 +434,128 @@
   background: #fffaf0;
 }
 
+:host-context(.nm-theme-dark) {
+  .refresh-chip {
+    color: rgb(226 232 240 / 82%);
+    background: rgb(30 41 59 / 78%);
+  }
+
+  .quick-action,
+  .record-row,
+  .rule-row,
+  .service-main,
+  .resource-row,
+  .runtime-meta div {
+    border-color: rgb(148 163 184 / 22%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 8%), transparent 38%),
+      rgb(13 24 40 / 84%);
+  }
+
+  .quick-action:hover,
+  .record-row:hover,
+  .rule-row:hover {
+    border-color: rgb(var(--nm-primary-rgb) / 42%);
+    background: rgb(var(--nm-primary-rgb) / 14%);
+  }
+
+  .quick-action span {
+    color: var(--nm-primary-hover);
+    background: rgb(var(--nm-primary-rgb) / 18%);
+  }
+
+  .quick-action strong,
+  .row-main strong,
+  .rule-row strong,
+  .card-heading h2,
+  .service-main strong,
+  .resource-head strong,
+  .runtime-meta strong {
+    color: rgb(248 250 252 / 96%);
+  }
+
+  .quick-action em,
+  .row-main span,
+  .row-side span,
+  .rule-row span,
+  .card-heading span,
+  .service-main em,
+  .resource-head span,
+  .empty-line,
+  .runtime-meta span {
+    color: rgb(226 232 240 / 74%);
+  }
+
+  .empty-state {
+    color: rgb(226 232 240 / 74%);
+    border: 1px solid rgb(148 163 184 / 18%);
+    background: rgb(15 27 46 / 74%);
+  }
+
+  .status,
+  .rule-row em,
+  .status-success {
+    color: #86efac;
+    background: rgb(22 101 52 / 24%);
+  }
+
+  .status-off,
+  .rule-warning em,
+  .status-warning {
+    color: #fde68a;
+    background: rgb(146 64 14 / 26%);
+  }
+
+  .rule-idle em,
+  .status-idle {
+    color: rgb(226 232 240 / 76%);
+    background: rgb(30 41 59 / 72%);
+  }
+
+  .status-danger {
+    color: #fca5a5;
+    background: rgb(127 29 29 / 26%);
+  }
+
+  .service-card,
+  .service-idle {
+    border-color: rgb(148 163 184 / 22%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 8%), transparent 38%),
+      linear-gradient(180deg, rgb(24 37 58 / 96%), rgb(13 24 40 / 96%));
+  }
+
+  .service-warning {
+    border-color: rgb(245 158 11 / 34%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(245 158 11 / 12%), transparent 38%),
+      linear-gradient(180deg, rgb(36 30 20 / 94%), rgb(18 24 38 / 94%));
+  }
+
+  .service-danger {
+    border-color: rgb(248 113 113 / 34%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(248 113 113 / 12%), transparent 38%),
+      linear-gradient(180deg, rgb(38 22 26 / 94%), rgb(18 24 38 / 94%));
+  }
+
+  .warning-note {
+    border-color: rgb(245 158 11 / 34%);
+    color: #fde68a;
+    background: rgb(146 64 14 / 18%);
+  }
+
+  ::ng-deep {
+    .ant-progress-bg {
+      box-shadow: 0 0 18px rgb(var(--nm-primary-rgb) / 18%);
+    }
+
+    .ant-progress-inner {
+      background-color: rgb(30 41 59 / 72%);
+    }
+  }
+}
+
 @media (max-width: 1199px) {
   .dashboard-panels,
   .dashboard-layout,

@@ -8,11 +8,12 @@ import {
 import { STChange, STColumn } from '@delon/abc/st';
 import { SHARED_IMPORTS, TitleLabelComponent } from '@shared';
 import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
-import { Predict, PredictGroup } from '@shared/types/rain-grid';
+import { Device, Predict, PredictGroup } from '@shared/types/rain-grid';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { finalize } from 'rxjs';
 
+import { DevicesService } from '../../devices/devices.service';
 import { RainfallService } from '../rainfall.service';
 
 @Component({
@@ -24,6 +25,7 @@ import { RainfallService } from '../rainfall.service';
 })
 export class PredictListComponent implements OnInit {
   private readonly service = inject(RainfallService);
+  private readonly devicesService = inject(DevicesService);
   private readonly message = inject(NzMessageService);
   private readonly modal = inject(NzModalService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -36,20 +38,42 @@ export class PredictListComponent implements OnInit {
   };
 
   protected data: PredictGroup[] = [];
+  protected devices: Device[] = [];
   protected total = 0;
   protected loading = false;
+  protected deviceLoading = false;
 
   protected readonly columns: Array<STColumn<PredictGroup>> = [
-    { title: '基准时间', index: 'baseTime', render: 'baseTimeRender', width: 180 },
-    { title: '设备', render: 'devicesRender', width: 190 },
-    { title: '预测降雨', render: 'rainRender', width: 360 },
-    { title: '数据量', render: 'countRender', width: 110 },
-    { title: '更新时间', render: 'updateTimeRender', width: 170 },
-    { title: '操作', render: 'actionsRender', width: 110 },
+    { title: '北京时间', index: 'baseTime', render: 'baseTimeRender' },
+    { title: { text: '预测降雨量', optional: '(mm)' }, render: 'rainSummaryRender' },
+    { title: '操作', render: 'actionsRender' },
   ];
 
   ngOnInit(): void {
-    this.getData();
+    this.loadDevices();
+  }
+
+  protected loadDevices(): void {
+    this.deviceLoading = true;
+    this.devicesService
+      .listAll()
+      .pipe(
+        finalize(() => {
+          this.deviceLoading = false;
+          this.cdr.markForCheck();
+        }),
+      )
+      .subscribe({
+        next: (devices) => {
+          this.devices = devices ?? [];
+          this.q.sncode = this.devices[0]?.sncode ?? '';
+          this.getData();
+        },
+        error: (err) => {
+          this.message.error(err?.msg || err?.message || '设备列表加载失败');
+          this.getData();
+        },
+      });
   }
 
   protected getData(): void {
@@ -83,7 +107,7 @@ export class PredictListComponent implements OnInit {
 
   protected resetQuery(): void {
     this.q.page = 1;
-    this.q.sncode = '';
+    this.q.sncode = this.devices[0]?.sncode ?? '';
     this.q.dateRange = [];
     this.getData();
   }
@@ -128,7 +152,10 @@ export class PredictListComponent implements OnInit {
     if (!value) return '-';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '-';
-    return date.toLocaleString('zh-CN', { hour12: false });
+    const pad = (num: number): string => String(num).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(
+      date.getHours(),
+    )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 
   protected sncodes(group: PredictGroup): string[] {
@@ -139,32 +166,57 @@ export class PredictListComponent implements OnInit {
     return this.sncodes(group).slice(0, 3);
   }
 
-  protected latestUpdate(group: PredictGroup): number | undefined {
-    const values = group.predictList
-      .map((item) => item.updateTime || item.createTime || 0)
-      .filter((item) => item > 0);
-    if (values.length === 0) return undefined;
-    return Math.max(...values);
-  }
-
-  protected horizonItems(group: PredictGroup): Predict[] {
-    const selected = new Map<number, Predict>();
-    group.predictList.forEach((item) => {
-      if (!selected.has(item.type)) selected.set(item.type, item);
-    });
-    return [1, 12, 24]
-      .map((type) => selected.get(type))
-      .filter((item): item is Predict => Boolean(item));
-  }
-
-  protected typeLabel(type: number): string {
-    if (type === 1 || type === 12 || type === 24) return `${type} 小时`;
-    return `${type}`;
-  }
-
   protected rainText(value?: number): string {
     if (value === null || value === undefined) return '-';
-    return `${Number(value).toFixed(2)} mm`;
+    return Number(value).toFixed(6);
+  }
+
+  protected realRainText(value?: number): string {
+    if (value === null || value === undefined) return '-';
+    return Number(value).toFixed(6);
+  }
+
+  protected predictRainValue(item: Predict): number | undefined {
+    return item.predictNewRain ?? item.predictRain;
+  }
+
+  protected predictLevelValue(item: Predict): number | undefined {
+    return item.predictNewRainLevel ?? item.predictRainLevel;
+  }
+
+  protected shouldShowPredictLevel(group: PredictGroup, item: Predict): boolean {
+    if (Number(item.type) === 1) return false;
+    const baseTime = this.toTimestamp(group.baseTime);
+    const predictTime = this.toTimestamp(item.time);
+    if (!baseTime || !predictTime) return true;
+    const diffHour = Math.round((predictTime - baseTime) / (60 * 60 * 1000));
+    return diffHour !== 1;
+  }
+
+  protected sortedPredictList(group: PredictGroup): Predict[] {
+    return [...group.predictList].sort((prev, next) => {
+      const prevTime = prev.time || 0;
+      const nextTime = next.time || 0;
+      if (prevTime !== nextTime) return prevTime - nextTime;
+      return prev.type - next.type;
+    });
+  }
+
+  protected expandHint(group: PredictGroup): string {
+    const count = group.predictList.length;
+    if (count === 0) return '暂无明细';
+    return `点击展开查看 ${count} 条明细`;
+  }
+
+  protected groupRealRain(group: PredictGroup): number | undefined {
+    if (group.realRain !== undefined && group.realRain !== null) return group.realRain;
+    return group.predictList.find((item) => item.realRain !== undefined && item.realRain !== null)
+      ?.realRain;
+  }
+
+  protected deviceOptionLabel(device: Device): string {
+    if (!device.alias) return device.sncode;
+    return `${device.sncode} · ${device.alias}`;
   }
 
   protected levelLabel(level?: number): string {
@@ -181,6 +233,23 @@ export class PredictListComponent implements OnInit {
         return '暴雨';
       default:
         return `等级 ${level ?? '-'}`;
+    }
+  }
+
+  protected levelClass(level?: number): string {
+    switch (level) {
+      case 0:
+        return 'level-none';
+      case 1:
+        return 'level-light';
+      case 2:
+        return 'level-medium';
+      case 3:
+        return 'level-heavy';
+      case 4:
+        return 'level-storm';
+      default:
+        return 'level-unknown';
     }
   }
 

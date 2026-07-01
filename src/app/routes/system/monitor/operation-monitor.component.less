@@ -364,6 +364,154 @@
   padding: 16px;
 }
 
+:host-context(.nm-theme-dark) {
+  .monitor-page {
+    color: rgb(248 250 252 / 94%);
+  }
+
+  .refresh-chip,
+  .card-chip {
+    border: 1px solid rgb(148 163 184 / 20%) !important;
+    color: rgb(226 232 240 / 76%) !important;
+    background: rgb(15 23 42 / 62%) !important;
+  }
+
+  .metric-card,
+  .monitor-card,
+  .service-summary div,
+  .runtime-grid div,
+  .resource-item,
+  .issue-row {
+    border-color: rgb(148 163 184 / 22%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 8%), transparent 40%),
+      linear-gradient(180deg, rgb(18 31 50 / 94%), rgb(11 22 38 / 94%)) !important;
+    box-shadow:
+      0 18px 42px rgb(0 0 0 / 24%),
+      inset 0 1px 0 rgb(255 255 255 / 5%) !important;
+  }
+
+  .metric-card:hover,
+  .issue-row:hover {
+    border-color: rgb(var(--nm-primary-rgb) / 42%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 16%), transparent 42%),
+      rgb(17 31 52 / 96%) !important;
+  }
+
+  .metric-primary {
+    border-color: rgb(var(--nm-primary-rgb) / 34%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 18%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .metric-success,
+  .service-card,
+  .status-card {
+    border-color: rgb(34 197 94 / 30%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(34 197 94 / 12%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .metric-warning,
+  .service-warning {
+    border-color: rgb(245 158 11 / 34%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(245 158 11 / 14%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .metric-danger,
+  .service-danger {
+    border-color: rgb(248 113 113 / 34%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(248 113 113 / 13%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .metric-idle,
+  .service-idle {
+    border-color: rgb(148 163 184 / 22%) !important;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 8%), transparent 42%),
+      rgb(13 24 42 / 96%) !important;
+  }
+
+  .card-heading h2,
+  .metric-card strong,
+  .service-summary strong,
+  .runtime-grid strong,
+  .resource-head strong,
+  .issue-row strong {
+    color: rgb(248 250 252 / 96%) !important;
+  }
+
+  .card-heading span,
+  .metric-card span,
+  .metric-card em,
+  .service-summary span,
+  .runtime-grid span,
+  .service-meta,
+  .resource-head span,
+  .resource-item em,
+  .empty-line,
+  .issue-row span {
+    color: rgb(226 232 240 / 74%) !important;
+  }
+
+  .status-chip {
+    border: 1px solid rgb(148 163 184 / 20%) !important;
+    background: rgb(15 23 42 / 62%) !important;
+  }
+
+  .status-success {
+    border-color: rgb(34 197 94 / 30%) !important;
+    color: #86efac !important;
+    background: rgb(22 101 52 / 24%) !important;
+  }
+
+  .status-warning {
+    border-color: rgb(245 158 11 / 34%) !important;
+    color: #fde68a !important;
+    background: rgb(146 64 14 / 28%) !important;
+  }
+
+  .status-danger {
+    border-color: rgb(248 113 113 / 34%) !important;
+    color: #fca5a5 !important;
+    background: rgb(127 29 29 / 28%) !important;
+  }
+
+  .status-idle {
+    color: rgb(226 232 240 / 72%) !important;
+    background: rgb(30 41 59 / 72%) !important;
+  }
+
+  .warning-note {
+    border-color: rgb(245 158 11 / 34%) !important;
+    color: #fde68a !important;
+    background: rgb(146 64 14 / 22%) !important;
+  }
+
+  .empty-state {
+    border-color: rgb(148 163 184 / 24%) !important;
+    color: rgb(226 232 240 / 74%) !important;
+    background: rgb(15 27 46 / 72%) !important;
+  }
+
+  .resource-item ::ng-deep {
+    .ant-progress-inner {
+      background-color: rgb(148 163 184 / 18%) !important;
+    }
+
+    .ant-progress-bg {
+      box-shadow: 0 0 14px rgb(var(--nm-primary-rgb) / 18%);
+    }
+  }
+}
+
 @media (max-width: 1200px) {
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
