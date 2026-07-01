@@ -18,8 +18,8 @@ import { Device, Grid, SaveGridPayload } from '@shared/types/rain-grid';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { finalize } from 'rxjs';
 
-import { DeviceMapComponent } from '../../devices/distribution/device-map/device-map.component';
 import { DevicesService } from '../../devices/devices.service';
+import { DeviceMapComponent } from '../../devices/distribution/device-map/device-map.component';
 import { GridsService } from '../grids.service';
 
 interface GridRouteState {

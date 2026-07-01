@@ -92,10 +92,12 @@ import {
   CloudOutline,
   UnderlineOutline,
   UnorderedListOutline,
+  ScheduleOutline,
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
   HomeOutline,
+  ScheduleOutline,
   BorderOutline,
   RollbackOutline,
   LayoutOutline,

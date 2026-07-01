@@ -64,12 +64,12 @@
 
 .query-bar {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) minmax(220px, 0.5fr) auto;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.1fr) minmax(150px, 0.35fr) auto;
   gap: 12px;
   align-items: center;
 }
 
-.search-input {
+.query-bar nz-select {
   width: 100%;
 }
 
@@ -134,6 +134,182 @@
 .level-storm {
   color: #b42318;
   background: #fee4e2;
+}
+
+:host-context(.nm-theme-dark) {
+  .grid-data-page {
+    color: rgb(248 250 252 / 94%);
+  }
+
+  .list-card {
+    border: 1px solid rgb(148 163 184 / 22%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 10%), transparent 38%),
+      linear-gradient(180deg, rgb(18 31 50 / 95%), rgb(10 20 36 / 96%)) !important;
+    box-shadow:
+      0 18px 42px rgb(0 0 0 / 24%),
+      inset 0 1px 0 rgb(255 255 255 / 5%);
+  }
+
+  .filter-panel {
+    padding: 16px;
+    border: 1px solid rgb(148 163 184 / 16%);
+    border-radius: 12px;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(var(--nm-primary-rgb) / 8%), transparent 34%),
+      rgb(8 17 31 / 32%);
+  }
+
+  .filter-heading strong,
+  .strong,
+  .coordinate-line,
+  .rain-value {
+    color: rgb(248 250 252 / 96%);
+  }
+
+  .filter-heading span,
+  .muted {
+    color: rgb(226 232 240 / 72%);
+  }
+
+  .result-chip {
+    color: #93c5fd !important;
+    background: rgb(var(--nm-primary-rgb) / 22%);
+  }
+
+  .level {
+    border: 1px solid rgb(148 163 184 / 24%);
+    color: rgb(226 232 240 / 76%);
+    background: rgb(30 41 59 / 58%);
+  }
+
+  .level-none {
+    border-color: rgb(148 163 184 / 30%);
+    color: rgb(226 232 240 / 76%);
+    background: rgb(30 41 59 / 58%);
+  }
+
+  .level-light {
+    border-color: rgb(134 239 172 / 44%);
+    color: #86efac;
+    background: rgb(22 101 52 / 24%);
+  }
+
+  .level-medium {
+    border-color: rgb(252 211 77 / 48%);
+    color: #fde68a;
+    background: rgb(146 64 14 / 26%);
+  }
+
+  .level-heavy {
+    border-color: rgb(252 165 165 / 50%);
+    color: #fca5a5;
+    background: rgb(127 29 29 / 28%);
+  }
+
+  .level-storm {
+    border-color: rgb(248 113 113 / 56%);
+    color: #fecaca;
+    background: rgb(127 29 29 / 36%);
+  }
+
+  .level-unknown {
+    border-color: rgb(148 163 184 / 28%);
+    color: rgb(226 232 240 / 72%);
+    background: rgb(30 41 59 / 54%);
+  }
+
+  .list-card ::ng-deep {
+    .ant-card-body {
+      background: transparent !important;
+    }
+
+    .ant-input,
+    .ant-input-affix-wrapper,
+    .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+      border-color: rgb(148 163 184 / 24%) !important;
+      color: rgb(248 250 252 / 94%) !important;
+      background: rgb(8 15 29 / 62%) !important;
+    }
+
+    .ant-input::placeholder {
+      color: rgb(203 213 225 / 58%) !important;
+    }
+
+    .ant-input-prefix,
+    .ant-select-arrow {
+      color: rgb(203 213 225 / 72%) !important;
+    }
+
+    .ant-table {
+      border-radius: 10px;
+      color: rgb(226 232 240 / 88%);
+      background: transparent !important;
+    }
+
+    .ant-table-container {
+      border-color: rgb(148 163 184 / 20%) !important;
+    }
+
+    .ant-table-thead > tr > th {
+      color: rgb(248 250 252 / 92%) !important;
+      border-color: rgb(148 163 184 / 22%) !important;
+      background: rgb(15 27 46 / 88%) !important;
+    }
+
+    .ant-table-tbody > tr > td {
+      color: rgb(226 232 240 / 88%) !important;
+      border-color: rgb(148 163 184 / 18%) !important;
+      background: rgb(10 20 35 / 42%) !important;
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background: rgb(var(--nm-primary-rgb) / 12%) !important;
+    }
+
+    .ant-table-placeholder,
+    .ant-table-placeholder:hover > td {
+      background: rgb(10 20 35 / 42%) !important;
+    }
+
+    .ant-empty-description,
+    .ant-pagination,
+    .ant-pagination-total-text,
+    .ant-pagination-options-quick-jumper {
+      color: rgb(226 232 240 / 72%) !important;
+    }
+
+    .ant-pagination-item,
+    .ant-pagination-prev .ant-pagination-item-link,
+    .ant-pagination-next .ant-pagination-item-link,
+    .ant-pagination-options-quick-jumper input,
+    .ant-pagination-options .ant-select-selector {
+      border-color: rgb(148 163 184 / 24%) !important;
+      color: rgb(248 250 252 / 92%) !important;
+      background: rgb(8 15 29 / 62%) !important;
+    }
+
+    .ant-pagination-item a,
+    .ant-pagination-prev .ant-pagination-item-link,
+    .ant-pagination-next .ant-pagination-item-link {
+      color: rgb(226 232 240 / 84%) !important;
+    }
+
+    .ant-pagination-item-active {
+      border-color: var(--nm-primary) !important;
+      background: rgb(var(--nm-primary-rgb) / 18%) !important;
+    }
+
+    .ant-pagination-item-active a {
+      color: #fff !important;
+    }
+
+    .ant-pagination-disabled .ant-pagination-item-link,
+    .ant-pagination-disabled:hover .ant-pagination-item-link {
+      color: rgb(148 163 184 / 32%) !important;
+      background: rgb(8 15 29 / 28%) !important;
+    }
+  }
 }
 
 @media (max-width: 900px) {

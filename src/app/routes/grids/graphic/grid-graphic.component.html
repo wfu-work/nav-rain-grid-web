@@ -98,12 +98,32 @@
               <span><i class="legend-light"></i>小雨</span>
               <span><i class="legend-medium"></i>中雨</span>
               <span><i class="legend-heavy"></i>大雨+</span>
+              <span><i class="legend-device"></i>设备点</span>
             </div>
           </div>
 
           <div class="heat-map-plane">
             <span class="axis axis-y">纬度</span>
             <span class="axis axis-x">经度</span>
+            @for (device of devicePoints; track device.key) {
+              <button
+                type="button"
+                class="device-point"
+                [style.left.%]="device.left"
+                [style.top.%]="device.top"
+                nz-tooltip
+                [nzTooltipTitle]="device.tooltip"
+                [nzTooltipMouseEnterDelay]="0"
+                [nzTooltipMouseLeaveDelay]="0.05"
+                nzTooltipPlacement="top"
+              >
+                <span></span>
+                <em>
+                  <strong>{{ device.label }}</strong>
+                  <small>{{ device.coordinate }}</small>
+                </em>
+              </button>
+            }
             @for (point of heatPoints; track point.key) {
               <button
                 type="button"
@@ -113,11 +133,17 @@
                 [style.width.px]="point.size"
                 [style.height.px]="point.size"
                 [style.--heat-color]="point.color"
-                [attr.title]="point.tooltip"
+                nz-tooltip
+                [nzTooltipTitle]="point.tooltip"
+                [nzTooltipMouseEnterDelay]="0"
+                [nzTooltipMouseLeaveDelay]="0.05"
+                nzTooltipPlacement="top"
               >
                 <span>{{ point.rain.toFixed(2) }}</span>
+                <em>{{ point.coordinate }}</em>
               </button>
-            } @empty {
+            }
+            @if (heatPoints.length === 0 && devicePoints.length === 0) {
               <div class="empty-state">暂无可绘制的格网点位，请先生成格网差分数据。</div>
             }
           </div>

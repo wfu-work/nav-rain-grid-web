@@ -6,10 +6,11 @@ import {
   inject,
 } from '@angular/core';
 import { SHARED_IMPORTS, TitleLabelComponent } from '@shared';
-import { Grid, GridDiffPoint, GridDiffTask } from '@shared/types/rain-grid';
+import { Device, Grid, GridDiffPoint, GridDiffTask } from '@shared/types/rain-grid';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
 
+import { DevicesService } from '../../devices/devices.service';
 import { GridsService } from '../grids.service';
 
 type HeatHorizon = '1h' | '12h' | '24h';
@@ -33,6 +34,15 @@ interface HeatPointView {
   tooltip: string;
 }
 
+interface DevicePointView {
+  key: string;
+  left: number;
+  top: number;
+  label: string;
+  coordinate: string;
+  tooltip: string;
+}
+
 interface HeatSummary {
   total: number;
   valid: number;
@@ -50,6 +60,7 @@ interface HeatSummary {
 })
 export class GridGraphicComponent implements OnInit {
   private readonly service = inject(GridsService);
+  private readonly devicesService = inject(DevicesService);
   private readonly message = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -67,6 +78,7 @@ export class GridGraphicComponent implements OnInit {
 
   protected grids: Grid[] = [];
   protected tasks: GridDiffTask[] = [];
+  protected devices: Device[] = [];
   protected points: GridDiffPoint[] = [];
   protected optionsLoading = false;
   protected loading = false;
@@ -80,6 +92,18 @@ export class GridGraphicComponent implements OnInit {
     return this.tasks.filter((item) => item.gridGuid === this.q.gridGuid);
   }
 
+  protected get selectedGrid(): Grid | undefined {
+    return this.grids.find((item) => item.guid === this.q.gridGuid);
+  }
+
+  protected get selectedGridDevices(): Device[] {
+    const sncodes = new Set(this.splitSncodes(this.selectedGrid?.sncodes));
+    if (sncodes.size === 0) return [];
+    return this.devices.filter(
+      (item) => sncodes.has(item.sncode) && this.hasDeviceCoordinate(item),
+    );
+  }
+
   protected get heatPoints(): HeatPointView[] {
     const maxRain = this.summary.maxRain;
     const bounds = this.bounds();
@@ -89,7 +113,7 @@ export class GridGraphicComponent implements OnInit {
         const rain = this.rainValue(item);
         const level = this.levelValue(item);
         const intensity = maxRain > 0 ? rain / maxRain : 0;
-        const size = 26 + Math.min(42, Math.max(0, intensity * 42));
+        const size = 18 + Math.min(22, Math.max(0, intensity * 22));
         const color = this.levelColor(level, rain);
         return {
           key: item.guid || `${item.gridGuid}-${item.centerLng}-${item.centerLat}`,
@@ -105,6 +129,18 @@ export class GridGraphicComponent implements OnInit {
           tooltip: `${item.gridName || '格网中心点'}｜${rain.toFixed(4)} mm｜${this.levelLabel(level)}`,
         };
       });
+  }
+
+  protected get devicePoints(): DevicePointView[] {
+    const bounds = this.bounds();
+    return this.selectedGridDevices.map((item) => ({
+      key: item.guid || item.sncode,
+      left: this.coordinateLeft(Number(item.lng), bounds),
+      top: this.coordinateTop(Number(item.lat), bounds),
+      label: item.sncode,
+      coordinate: `${this.coordinateText(Number(item.lng))}, ${this.coordinateText(Number(item.lat))}`,
+      tooltip: `${item.alias || item.sncode}｜${this.coordinateText(Number(item.lng))}, ${this.coordinateText(Number(item.lat))}`,
+    }));
   }
 
   protected get topPoints(): HeatPointView[] {
@@ -130,6 +166,7 @@ export class GridGraphicComponent implements OnInit {
     forkJoin({
       grids: this.service.query({}).pipe(catchError(() => of([] as Grid[]))),
       tasks: this.service.taskQuery({}).pipe(catchError(() => of([] as GridDiffTask[]))),
+      devices: this.devicesService.listAll().pipe(catchError(() => of([] as Device[]))),
     })
       .pipe(
         finalize(() => {
@@ -137,9 +174,10 @@ export class GridGraphicComponent implements OnInit {
           this.cdr.markForCheck();
         }),
       )
-      .subscribe(({ grids, tasks }) => {
+      .subscribe(({ grids, tasks, devices }) => {
         this.grids = grids ?? [];
         this.tasks = tasks ?? [];
+        this.devices = devices ?? [];
         this.useDefaultTask();
         this.getData();
       });
@@ -191,8 +229,7 @@ export class GridGraphicComponent implements OnInit {
   }
 
   protected taskLabel(item: GridDiffTask): string {
-    const countText = item.pointCount ? `${item.pointCount} 点` : '无点位';
-    return `${item.gridName || '未命名格网'}｜${this.formatTime(item.baseTime)}｜${countText}`;
+    return `${item.gridName || '未命名格网'}｜${this.formatTime(item.baseTime)}`;
   }
 
   protected rainText(value: number): string {
@@ -288,11 +325,24 @@ export class GridGraphicComponent implements OnInit {
     );
   }
 
+  private hasDeviceCoordinate(item: Device): boolean {
+    return (
+      item.lng !== null && item.lng !== undefined && item.lat !== null && item.lat !== undefined
+    );
+  }
+
   private bounds(): { minLng: number; maxLng: number; minLat: number; maxLat: number } | null {
-    const items = this.points.filter((item) => this.hasCoordinate(item));
+    const pointItems = this.points
+      .filter((item) => this.hasCoordinate(item))
+      .map((item) => ({ lng: Number(item.centerLng), lat: Number(item.centerLat) }));
+    const deviceItems = this.selectedGridDevices.map((item) => ({
+      lng: Number(item.lng),
+      lat: Number(item.lat),
+    }));
+    const items = [...pointItems, ...deviceItems];
     if (items.length === 0) return null;
-    const lngs = items.map((item) => Number(item.centerLng));
-    const lats = items.map((item) => Number(item.centerLat));
+    const lngs = items.map((item) => item.lng);
+    const lats = items.map((item) => item.lat);
     return {
       minLng: Math.min(...lngs),
       maxLng: Math.max(...lngs),
@@ -305,19 +355,40 @@ export class GridGraphicComponent implements OnInit {
     item: GridDiffPoint,
     bounds: { minLng: number; maxLng: number; minLat: number; maxLat: number } | null,
   ): number {
-    if (!bounds || bounds.maxLng === bounds.minLng) return 50;
-    return this.clamp(((Number(item.centerLng) - bounds.minLng) / (bounds.maxLng - bounds.minLng)) * 84 + 8);
+    return this.coordinateLeft(Number(item.centerLng), bounds);
   }
 
   private pointTop(
     item: GridDiffPoint,
     bounds: { minLng: number; maxLng: number; minLat: number; maxLat: number } | null,
   ): number {
+    return this.coordinateTop(Number(item.centerLat), bounds);
+  }
+
+  private coordinateLeft(
+    lng: number,
+    bounds: { minLng: number; maxLng: number; minLat: number; maxLat: number } | null,
+  ): number {
+    if (!bounds || bounds.maxLng === bounds.minLng) return 50;
+    return this.clamp(((lng - bounds.minLng) / (bounds.maxLng - bounds.minLng)) * 82 + 9);
+  }
+
+  private coordinateTop(
+    lat: number,
+    bounds: { minLng: number; maxLng: number; minLat: number; maxLat: number } | null,
+  ): number {
     if (!bounds || bounds.maxLat === bounds.minLat) return 50;
-    return this.clamp(90 - ((Number(item.centerLat) - bounds.minLat) / (bounds.maxLat - bounds.minLat)) * 78);
+    return this.clamp(82 - ((lat - bounds.minLat) / (bounds.maxLat - bounds.minLat)) * 70);
   }
 
   private clamp(value: number, min = 6, max = 94): number {
     return Math.max(min, Math.min(max, value));
+  }
+
+  private splitSncodes(value?: string | null): string[] {
+    return (value ?? '')
+      .split(/[,，\n\r\s]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
   }
 }

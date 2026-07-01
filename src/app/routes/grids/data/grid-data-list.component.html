@@ -1,9 +1,6 @@
 <section class="grid-data-page">
   <div class="page-heading">
-    <title-label
-      title="格网数据"
-      description="查看格网中心点的 1 / 12 / 24 小时差分降雨结果。"
-    />
+    <title-label title="格网数据" description="查看格网中心点的 1 / 12 / 24 小时差分降雨结果。" />
     <div class="page-actions">
       <button nz-button (click)="getData()">
         <i nz-icon nzType="reload"></i>
@@ -17,31 +14,45 @@
       <div class="filter-heading">
         <div>
           <strong>筛选点位</strong>
-          <span>按格网名称、任务 GUID 或格网 GUID 定位差分结果。</span>
+          <span>选择格网任务和预测时效后，表格会展示对应差分降雨结果。</span>
         </div>
         <span class="result-chip">共 {{ total || 0 }} 条</span>
       </div>
 
       <div class="query-bar">
-        <nz-input-wrapper class="search-input">
-          <nz-icon nzInputPrefix nzType="search" />
-          <input
-            nz-input
-            [(ngModel)]="q.content"
-            placeholder="搜索格网名称、任务 GUID 或格网 GUID"
-            (keydown.enter)="search()"
-          />
-        </nz-input-wrapper>
-        <input
-          nz-input
+        <nz-select
+          [(ngModel)]="q.gridGuid"
+          nzAllowClear
+          nzShowSearch
+          nzPlaceHolder="全部格网"
+          [nzLoading]="optionsLoading"
+          (ngModelChange)="onGridChange($event || '')"
+        >
+          @for (grid of grids; track grid.guid) {
+            <nz-option [nzValue]="grid.guid" [nzLabel]="grid.name" />
+          }
+        </nz-select>
+        <nz-select
           [(ngModel)]="q.taskGuid"
-          placeholder="任务 GUID"
-          (keydown.enter)="search()"
-        />
+          nzAllowClear
+          nzShowSearch
+          nzPlaceHolder="选择格网任务"
+          [nzLoading]="optionsLoading"
+          (ngModelChange)="onTaskChange($event || '')"
+        >
+          @for (task of filteredTasks; track task.guid) {
+            <nz-option [nzValue]="task.guid" [nzLabel]="taskLabel(task)" />
+          }
+        </nz-select>
+        <nz-select [(ngModel)]="q.horizon" nzPlaceHolder="预测时效">
+          @for (item of horizonOptions; track item.value) {
+            <nz-option [nzValue]="item.value" [nzLabel]="item.label" />
+          }
+        </nz-select>
         <div class="filter-actions">
-          <button nz-button nzType="primary" (click)="search()">
+          <button nz-button nzType="primary" [nzLoading]="loading" (click)="search()">
             <i nz-icon nzType="search"></i>
-            搜索
+            查询
           </button>
           <button nz-button (click)="resetQuery()">重置</button>
         </div>
@@ -73,24 +84,10 @@
         <div class="muted">整点预测基准</div>
       </ng-template>
 
-      <ng-template st-row="rain1hRender" let-item>
-        <div class="rain-value">{{ rainText(item.predictRain1h) }}</div>
-        <span [class]="'level ' + levelClass(item.predictRainLevel1h)">
-          {{ levelLabel(item.predictRainLevel1h) }}
-        </span>
-      </ng-template>
-
-      <ng-template st-row="rain12hRender" let-item>
-        <div class="rain-value">{{ rainText(item.predictRain12h) }}</div>
-        <span [class]="'level ' + levelClass(item.predictRainLevel12h)">
-          {{ levelLabel(item.predictRainLevel12h) }}
-        </span>
-      </ng-template>
-
-      <ng-template st-row="rain24hRender" let-item>
-        <div class="rain-value">{{ rainText(item.predictRain24h) }}</div>
-        <span [class]="'level ' + levelClass(item.predictRainLevel24h)">
-          {{ levelLabel(item.predictRainLevel24h) }}
+      <ng-template st-row="rainRender" let-item>
+        <div class="rain-value">{{ rainText(rainValue(item)) }}</div>
+        <span [class]="'level ' + levelClass(levelValue(item))">
+          {{ levelLabel(levelValue(item)) }}
         </span>
       </ng-template>
 
