@@ -18,7 +18,7 @@ import {
 import { defaultInterceptor, provideStartup } from '@core';
 import { provideCellWidgets } from '@delon/abc/cell';
 import { provideSTWidgets } from '@delon/abc/st';
-import { provideAuth } from '@delon/auth';
+import { authSimpleInterceptor, provideAuth } from '@delon/auth';
 import { provideSFConfig } from '@delon/form';
 import { AlainProvideLang, provideAlain, zh_CN as delonLang } from '@delon/theme';
 import { AlainConfig } from '@delon/util/config';
@@ -78,7 +78,7 @@ if (environment.useHash) routerFeatures.push(withHashLocation());
 const providers: Array<Provider | EnvironmentProviders> = [
   provideBrowserGlobalErrorListeners(),
   provideZonelessChangeDetection(),
-  provideHttpClient(withInterceptors([...(environment.interceptorFns ?? []), defaultInterceptor])),
+  provideHttpClient(withInterceptors([...(environment.interceptorFns ?? []), authSimpleInterceptor, defaultInterceptor])),
   provideRouter(routes, ...routerFeatures),
   provideAlain({ config: alainConfig, defaultLang, icons: [...ICONS_AUTO, ...ICONS] }),
   provideNzConfig(ngZorroConfig),
